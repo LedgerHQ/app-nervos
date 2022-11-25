@@ -14,16 +14,6 @@
 #define G global.apdu.u.pubkey
 #define GPriv global.apdu.priv
 
-static bool pubkey_ok(void) {
-    delayed_send(provide_pubkey(G_io_apdu_buffer, &G.ext_public_key.public_key));
-    return true;
-}
-
-static bool ext_pubkey_ok(void) {
-    delayed_send(provide_ext_pubkey(G_io_apdu_buffer, &G.ext_public_key));
-    return true;
-}
-
 #define BIP32_HARDENED_PATH_BIT 0x80000000
 
 static inline void bound_check_buffer(size_t counter, size_t size) {
@@ -77,37 +67,6 @@ void render_pkh(char *const out, size_t const out_size,
     }
 }
 
-__attribute__((noreturn)) static void prompt_path(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
-    static size_t const TYPE_INDEX = 0;
-    static size_t const ADDRESS_INDEX = 1;
-
-    static const char *const pubkey_labels[] = {
-        PROMPT("Provide"),
-        PROMPT("Address"),
-        NULL,
-    };
-    REGISTER_STATIC_UI_VALUE(TYPE_INDEX, "Public Key");
-    register_ui_callback(ADDRESS_INDEX, lock_arg_to_sighash_address, &G.render_address_lock_arg);
-    ui_prompt(pubkey_labels, ok_cb, cxl_cb);
-}
-
-__attribute__((noreturn)) static void prompt_ext_path(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
-    static size_t const TYPE_INDEX = 0;
-    static size_t const DRV_PATH_INDEX = 1;
-    static size_t const ADDRESS_INDEX = 2;
-
-    static const char *const pubkey_labels[] = {
-        PROMPT("Provide"),
-        PROMPT("Derivation Path"),
-        PROMPT("Address"),
-        NULL,
-    };
-    REGISTER_STATIC_UI_VALUE(TYPE_INDEX, "Extended Public Key");
-    register_ui_callback(DRV_PATH_INDEX, bip32_path_to_string, &G);
-    register_ui_callback(ADDRESS_INDEX, lock_arg_to_sighash_address, &G.render_address_lock_arg);
-    ui_prompt(pubkey_labels, ok_cb, cxl_cb);
-}
-
 size_t handle_apdu_get_public_key(uint8_t _U_ instruction) {
     const uint8_t *const dataBuffer = G_io_apdu_buffer + OFFSET_CDATA;
 
@@ -124,10 +83,8 @@ size_t handle_apdu_get_public_key(uint8_t _U_ instruction) {
     generate_lock_arg_for_pubkey(&G.ext_public_key.public_key, &G.render_address_lock_arg);
 
     if (instruction == INS_PROMPT_EXT_PUBLIC_KEY) {
-      ui_callback_t cb = ext_pubkey_ok;
-      prompt_ext_path(cb, delay_reject);
+      provide_ext_pubkey(G_io_apdu_buffer, &G.ext_public_key);
     } else {
-      ui_callback_t cb = pubkey_ok;
-      prompt_path(cb, delay_reject);
+      provide_pubkey(G_io_apdu_buffer, &G.ext_public_key.public_key);
     }
 }
