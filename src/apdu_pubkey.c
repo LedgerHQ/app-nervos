@@ -58,10 +58,14 @@ void render_pkh(char *const out, size_t const out_size,
     uint8_t base32_buf[base32_max];
     size_t base32_len = 0;
     size_t payload_len = 0;
-    if (payload->s.address_format_type == ADDRESS_FORMAT_TYPE_SHORT) {
-        payload_len = sizeof(payload->s);
+    uint8_t is_bech32m = 0;
+    if (payload->full_version.address_format_type == ADDRESS_FORMAT_TYPE_FULL_VERSION) {
+        payload_len = sizeof(payload->full_version);
+        is_bech32m = 1;
+    } else if (payload->short_version.address_format_type == ADDRESS_FORMAT_TYPE_SHORT) {
+        payload_len = sizeof(payload->short_version);
     } else {
-        payload_len = sizeof(payload->f);
+        payload_len = sizeof(payload->code_hash_data_or_type);
     }
 
     if (!convert_bits(base32_buf, base32_max, &base32_len,
@@ -72,7 +76,7 @@ void render_pkh(char *const out, size_t const out_size,
         THROW(EXC_MEMORY_ERROR);
     }
     static const char hrbs[][4] = {"ckb", "ckt"};
-    if (!bech32_encode(out, out_size, hrbs[N_data.address_type&ADDRESS_TYPE_MASK], base32_buf, base32_len)) {
+    if (!bech32_encode(out, out_size, hrbs[N_data.address_type&ADDRESS_TYPE_MASK], base32_buf, base32_len, is_bech32m)) {
         THROW(EXC_MEMORY_ERROR);
     }
 }

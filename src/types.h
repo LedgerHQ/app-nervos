@@ -139,9 +139,10 @@ typedef struct public_key_hash {
     char *hash_ptr; // caching.
 } public_key_hash_t;
 
+#define ADDRESS_FORMAT_TYPE_FULL_VERSION 0x00
 #define ADDRESS_FORMAT_TYPE_SHORT 0x01
-#define ADDRESS_FORMAT_TYPE_FULL_DATA 0x02
-#define ADDRESS_FORMAT_TYPE_FULL_TYPE 0x04
+#define ADDRESS_FORMAT_TYPE_CODE_HASH_DATA 0x02
+#define ADDRESS_FORMAT_TYPE_CODE_HASH_TYPE 0x04
 
 #define ADDRESS_CODE_HASH_TYPE_SIGHASH 0x00
 #define ADDRESS_CODE_HASH_TYPE_MULTISIG 0x01
@@ -149,15 +150,22 @@ typedef struct public_key_hash {
 typedef union {
     struct {
         uint8_t address_format_type;
+        uint8_t code_hash[32];
+        uint8_t hash_type;
+        standard_lock_arg_t hash;
+    } full_version; // full
+
+    struct {
+        uint8_t address_format_type;
         uint8_t code_hash_index;
         standard_lock_arg_t hash;
-    } s; // short
+    } short_version; // short
 
     struct {
         uint8_t address_format_type;
         uint8_t code_hash[32];
         lock_arg_t lock_arg;
-    } f; // full
+    } code_hash_data_or_type; // code_hash_data or code_hash_type
 } render_address_payload_t;
 
 struct output_t {
