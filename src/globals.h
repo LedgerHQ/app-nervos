@@ -155,10 +155,6 @@ typedef struct {
         ui_callback_t ok_callback;
         ui_callback_t cxl_callback;
 
-        uint32_t ux_step;
-        uint32_t ux_step_count;
-
-        uint32_t timeout_cycle_count;
         void (*switch_screen)(uint32_t which);
 
         struct {
@@ -170,7 +166,8 @@ typedef struct {
 
             // This will and must always be static memory full of constants
             const char *const *prompts;
-	    size_t offset;
+
+            size_t offset;
         } prompt;
     } ui;
 
