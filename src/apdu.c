@@ -82,6 +82,8 @@ size_t handle_apdu_get_wallet_id(uint8_t __attribute__((unused)) instruction) {
 __attribute__((noinline)) void stack_sentry_fill() {
   uint32_t* p;
   volatile int top;
+
+  (void)p;
   top=5;
   memset((void*)(&app_stack_canary+1), 42, ((uint8_t*)(&top-10))-((uint8_t*)&app_stack_canary));
 }
@@ -89,7 +91,7 @@ __attribute__((noinline)) void stack_sentry_fill() {
 void measure_stack_max() {
   uint32_t* p;
   volatile int top;
-  for(p=&app_stack_canary+1; p<((&top)-10); p++)
+  for(p=(uint32_t*)&app_stack_canary+1; p<(uint32_t*)((&top)-10); p++)
     if(*p != 0x2a2a2a2a) {
 	    PRINTF("Free space between globals and maximum stack: %d\n", 4*(p-&app_stack_canary));
 	    return;

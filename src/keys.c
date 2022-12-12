@@ -62,7 +62,7 @@ key_pair_t *generate_extended_key_pair_return_global(bip32_path_t const *const b
             cx_ecfp_generate_pair(cx_curve, &priv->res.public_key, &priv->res.private_key, 1);
 
             if (cx_curve == CX_CURVE_Ed25519) {
-                cx_edward_compress_point(CX_CURVE_Ed25519, priv->res.public_key.W, priv->res.public_key.W_len);
+                cx_edwards_compress_point_no_throw(CX_CURVE_Ed25519, priv->res.public_key.W, priv->res.public_key.W_len);
                 priv->res.public_key.W_len = 33;
             }
         }
@@ -130,12 +130,12 @@ void generate_lock_arg_for_pubkey(const cx_ecfp_public_key_t *const key, standar
     uint8_t tag_byte=(key->W[64]&1) ? 0x03 : 0x02;
 
     uint8_t temp_hash[32];
-    
+
     cx_blake2b_t hash_state;
 
     cx_blake2b_init2(&hash_state, 32*8, NULL, 0, (uint8_t *)blake2b_personalization,
                      sizeof(blake2b_personalization) - 1);
-    
+
     cx_hash((cx_hash_t *)&hash_state, 0, (uint8_t *const) & tag_byte, 1, NULL, 0);
     cx_hash((cx_hash_t *)&hash_state, 0, (uint8_t *const) key->W+1, 32, NULL, 0);
     cx_hash((cx_hash_t *)&hash_state, CX_LAST, NULL, 0, (uint8_t *const) temp_hash,
