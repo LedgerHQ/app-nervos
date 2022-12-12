@@ -1,8 +1,16 @@
 #ifdef HAVE_NBGL
 
+#include "nbgl_use_case.h"
 #include "ui.h"
+#include "glyphs.h"
 
 void ui_initial_screen(void) {
+    nbgl_useCaseHome(APPNAME,
+                     &C_stax_nervos_64px,
+                     NULL,
+                     true,
+                     NULL,
+                     exit_app);
 }
 
 void ui_refresh(void) {

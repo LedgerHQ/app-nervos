@@ -74,9 +74,9 @@ void require_pin(void) {
     os_ux_blocking(&params);
 }
 
-__attribute__((noreturn)) bool exit_app(void) {
+void exit_app(void) {
 #ifdef BAKING_APP
-#if !defined(TARGET_NANOX) && !defined(TARGET_NANOS2)
+#ifdef TARGET_NANOS
     require_pin();
 #endif
 #endif
