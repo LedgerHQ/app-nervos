@@ -1,3 +1,5 @@
+#ifdef HAVE_BAGL
+
 #include "bolos_target.h"
 
 #include "ui.h"
@@ -9,6 +11,7 @@
 #include "memory.h"
 #include "os_cx.h" // ui-menu
 #include "to_string.h"
+#include "ux.h"
 
 #include <stdbool.h>
 #include <string.h>
@@ -18,51 +21,6 @@
 
 void ui_refresh(void) {
     ux_stack_display(0);
-}
-
-// CALLED BY THE SDK
-unsigned char io_event(unsigned char channel);
-
-unsigned char io_event(__attribute__((unused)) unsigned char channel) {
-    // nothing done with the event, throw an error on the transport layer if
-    // needed
-
-    // can't have more than one tag in the reply, not supported yet.
-    switch (G_io_seproxyhal_spi_buffer[0]) {
-    case SEPROXYHAL_TAG_FINGER_EVENT:
-        UX_FINGER_EVENT(G_io_seproxyhal_spi_buffer);
-        break;
-
-    case SEPROXYHAL_TAG_BUTTON_PUSH_EVENT:
-        UX_BUTTON_PUSH_EVENT(G_io_seproxyhal_spi_buffer);
-        break;
-
-    case SEPROXYHAL_TAG_STATUS_EVENT:
-        if (G_io_apdu_media == IO_APDU_MEDIA_USB_HID && !(U4BE(G_io_seproxyhal_spi_buffer, 3) & SEPROXYHAL_TAG_STATUS_EVENT_FLAG_USB_POWERED)) {
-            THROW(EXCEPTION_IO_RESET);
-        }
-        // no break is intentional
-    default:
-        UX_DEFAULT_EVENT();
-        break;
-
-    case SEPROXYHAL_TAG_DISPLAY_PROCESSED_EVENT:
-        UX_DISPLAYED_EVENT({});
-        break;
-
-    case SEPROXYHAL_TAG_TICKER_EVENT:
-        UX_TICKER_EVENT(G_io_seproxyhal_spi_buffer, {});
-
-        break;
-    }
-
-    // close the event if not done previously (by a display or whatever)
-    if (!io_seproxyhal_spi_is_status_sent()) {
-        io_seproxyhal_general_status();
-    }
-
-    // command has been processed, DO NOT reset the current APDU transport
-    return 1;
 }
 
 void ui_cfg_screen(size_t);
@@ -293,3 +251,4 @@ __attribute__((noreturn)) void ui_prompt_with_cb(void (*switch_screen_cb)(uint32
     THROW(ASYNC_EXCEPTION);
 }
 
+#endif // HAVE_BAGL

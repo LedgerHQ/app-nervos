@@ -4,9 +4,6 @@
 
 #include "types.h"
 
-#define BAGL_STATIC_ELEMENT    0
-#define BAGL_SCROLLING_ELEMENT 100 // Arbitrary value chosen to connect data structures with prepro func
-
 void ui_initial_screen(void);
 void ui_init(void);
 void ui_refresh(void);

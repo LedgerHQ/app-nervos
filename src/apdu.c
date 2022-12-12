@@ -3,6 +3,7 @@
 #include "to_string.h"
 #include "version.h"
 #include "key_macros.h"
+#include "ux.h" // G_ux
 
 #include <stdbool.h>
 #include <stdint.h>
