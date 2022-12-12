@@ -198,13 +198,6 @@ extern const uint8_t blake2b_personalization[17];
 
 extern unsigned int volatile app_stack_canary; // From SDK
 
-// Used by macros that we don't control.
-#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
-extern ux_state_t G_ux;
-extern bolos_ux_params_t G_ux_params;
-#else
-extern ux_state_t ux;
-#endif
 extern unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 static inline void throw_stack_size() {
