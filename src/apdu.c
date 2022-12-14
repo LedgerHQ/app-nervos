@@ -103,13 +103,20 @@ void measure_stack_max() {
 #define CLA 0x80
 
 void main_loop(apdu_handler const *const handlers, size_t const handlers_size) {
-    volatile size_t rx = io_exchange(CHANNEL_APDU, 0);
+    unsigned short rx = 0;
+    unsigned short tx = 0;
+    unsigned char flags = 0;
+
     while (true) {
         BEGIN_TRY {
             TRY {
                 app_stack_canary=0xdeadbeef;
                 // Process APDU of size rx
 
+                rx = tx;
+                tx = 0;
+                rx = io_exchange(CHANNEL_APDU | flags, rx);
+                flags = 0;
                 if (rx == 0) {
                     // no apdu received, well, reset the session, and reset the
                     // bootloader configuration
@@ -135,25 +142,24 @@ void main_loop(apdu_handler const *const handlers, size_t const handlers_size) {
 
                 apdu_handler const cb = instruction >= handlers_size ? handle_apdu_error : handlers[instruction];
 
-		PRINTF("SIZOF1: %d SIZEOF2: %d\n", sizeof(G_ux), sizeof(G_ux_params));
-		PRINTF("Calling handler\n");
-                size_t const tx = cb(instruction);
-		PRINTF("Normal return\n");
+                PRINTF("SIZOF1: %d SIZEOF2: %d\n", sizeof(G_ux), sizeof(G_ux_params));
+                PRINTF("Calling handler\n");
+                cb(instruction);
+                PRINTF("Normal return\n");
 
                 if(0xdeadbeef != app_stack_canary) {
                     THROW(EXC_STACK_ERROR);
                 }
 #ifdef STACK_MEASURE
-		measure_stack_max();
+                measure_stack_max();
 #endif
 
-                rx = io_exchange(CHANNEL_APDU, tx);
+                flags |= IO_ASYNCH_REPLY;
             }
             CATCH(ASYNC_EXCEPTION) {
 #ifdef STACK_MEASURE
-		measure_stack_max();
+                measure_stack_max();
 #endif
-                rx = io_exchange(CHANNEL_APDU | IO_ASYNCH_REPLY, 0);
             }
             CATCH(EXCEPTION_IO_RESET) {
                 THROW(EXCEPTION_IO_RESET);
