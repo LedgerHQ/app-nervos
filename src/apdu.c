@@ -179,7 +179,7 @@ void main_loop(apdu_handler const *const handlers, size_t const handlers_size) {
                     size_t tx = 0;
                     G_io_apdu_buffer[tx++] = sw >> 8;
                     G_io_apdu_buffer[tx++] = sw;
-                    rx = io_exchange(CHANNEL_APDU, tx);
+                    rx = io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
                     break;
                 }
                 case 0xA000 ... 0xAFFF: {
@@ -187,7 +187,7 @@ void main_loop(apdu_handler const *const handlers, size_t const handlers_size) {
                     size_t tx = 0;
                     G_io_apdu_buffer[tx++] = sw >> 8;
                     G_io_apdu_buffer[tx++] = sw;
-                    rx = io_exchange(CHANNEL_APDU, tx);
+                    rx = io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
                     break;
 					}
                 }
