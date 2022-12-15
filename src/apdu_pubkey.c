@@ -82,15 +82,12 @@ void render_pkh(char *const out, size_t const out_size,
 }
 
 __attribute__((noreturn)) static void prompt_path(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
-    static size_t const TYPE_INDEX = 0;
-    static size_t const ADDRESS_INDEX = 1;
+    static size_t const ADDRESS_INDEX = 0;
 
     static const char *const pubkey_labels[] = {
-        PROMPT("Provide"),
         PROMPT("Address"),
         NULL,
     };
-    REGISTER_STATIC_UI_VALUE(TYPE_INDEX, "Public Key");
     register_ui_callback(ADDRESS_INDEX, lock_arg_to_sighash_address, &G.render_address_lock_arg);
     ui_prompt(pubkey_labels, ok_cb, cxl_cb);
 }
@@ -115,7 +112,8 @@ __attribute__((noreturn)) static void prompt_ext_path(ui_callback_t ok_cb, ui_ca
 size_t handle_apdu_get_public_key(uint8_t _U_ instruction) {
     const uint8_t *const dataBuffer = G_io_apdu_buffer + OFFSET_CDATA;
 
-    if (READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_P1]) != 0)
+    uint8_t verify = READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_P1]);
+    if ((verify != 0) && (verify != 1))
         THROW(EXC_WRONG_PARAM);
 
     size_t const cdata_size = READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_LC]);
@@ -128,10 +126,16 @@ size_t handle_apdu_get_public_key(uint8_t _U_ instruction) {
     generate_lock_arg_for_pubkey(&G.ext_public_key.public_key, &G.render_address_lock_arg);
 
     if (instruction == INS_PROMPT_EXT_PUBLIC_KEY) {
-      ui_callback_t cb = ext_pubkey_ok;
-      prompt_ext_path(cb, delay_reject);
+        if (verify) {
+            prompt_ext_path(ext_pubkey_ok, delay_reject);
+        } else {
+            ext_pubkey_ok();
+        }
     } else {
-      ui_callback_t cb = pubkey_ok;
-      prompt_path(cb, delay_reject);
+        if (verify) {
+            prompt_path(pubkey_ok, delay_reject);
+        } else {
+            pubkey_ok();
+        }
     }
 }
