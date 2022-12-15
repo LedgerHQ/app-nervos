@@ -118,7 +118,6 @@ ifneq ($(BOLOS_ENV),)
 $(info BOLOS_ENV=$(BOLOS_ENV))
 CLANGPATH := $(BOLOS_ENV)/clang-arm-fropi/bin/
 GCCPATH := $(BOLOS_ENV)/gcc-arm-none-eabi-5_3-2016q1/bin/
-CFLAGS += -idirafter $(BOLOS_ENV)/gcc-arm-none-eabi-5_3-2016q1/arm-none-eabi/include
 else
 $(info BOLOS_ENV is not set: falling back to CLANGPATH and GCCPATH)
 endif
@@ -144,13 +143,11 @@ CC       := $(CLANGPATH)clang
 AS       := $(GCCPATH)$(TOOL_PREFIX)gcc
 endif
 
-CFLAGS   += -O3 -Os -Wall -Wextra
 ifneq ($(USE_NIX),)
 CFLAGS   += -mcpu=sc000
 endif
 
 LD       := $(GCCPATH)$(TOOL_PREFIX)gcc
-LDFLAGS  += -O3 -Os
 ifneq ($(USE_NIX),)
 LDFLAGS  += -mcpu=sc000
 endif
