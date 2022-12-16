@@ -132,18 +132,6 @@ static bool get_data(uint8_t page, nbgl_pageContent_t *content) {
     return true;
 }
 
-void ui_prompt(const char *const *labels, ui_callback_t ok_c, ui_callback_t cxl_c) {
-    size_t prompt_count;
-
-    check_null(labels);
-    global.ui.prompt.prompts = labels;
-    prompt_count = 0;
-    while ((prompt_count < MAX_SCREEN_COUNT) && (labels[prompt_count] != NULL)) {
-        prompt_count++;
-    }
-    ui_prompt_with_cb(switch_screen, prompt_count, ok_c, cxl_c);
-}
-
 void ui_prompt_with_cb(void (*switch_screen_cb)(size_t),
                        size_t prompt_count,
                        ui_callback_t ok_c,

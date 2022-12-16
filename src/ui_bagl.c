@@ -194,36 +194,6 @@ void ui_initial_screen(void) {
 
 }
 
-void ui_prompt_debug(size_t screen_count) {
-    for(uint32_t i=0; i<screen_count; i++) {
-        G.switch_screen(i);
-        PRINTF("Prompt %d:\n%s\n%s\n", i, global.ui.prompt.active_prompt, global.ui.prompt.active_value);
-    }
-}
-
-void ui_prompt(const char *const *labels, ui_callback_t ok_c, ui_callback_t cxl_c) {
-    check_null(labels);
-    global.ui.prompt.prompts = labels;
-
-    size_t const screen_count = ({
-        size_t i = 0;
-        while (i < MAX_SCREEN_COUNT && labels[i] != NULL) { i++; }
-        i;
-    });
-
-    G.switch_screen = switch_screen;
-    // We fill the destination buffers at the end instead of the beginning so we can
-    // use the same array for any number of screens.
-    G.prompt.offset= MAX_SCREEN_COUNT - screen_count;
-
-    ui_prompt_debug(screen_count);
-
-    G.ok_callback = ok_c;
-    G.cxl_callback = cxl_c;
-    ux_flow_init(0, &ux_prompts_flow[G.prompt.offset], NULL);
-    THROW(ASYNC_EXCEPTION);
-}
-
 void ui_prompt_with_cb(void (*switch_screen_cb)(uint32_t), size_t screen_count, ui_callback_t ok_c, ui_callback_t cxl_c) {
     check_null(switch_screen_cb);
     if(screen_count>MAX_SCREEN_COUNT) THROW(EXC_MEMORY_ERROR);
@@ -236,7 +206,6 @@ void ui_prompt_with_cb(void (*switch_screen_cb)(uint32_t), size_t screen_count, 
     G.ok_callback = ok_c;
     G.cxl_callback = cxl_c;
     ux_flow_init(0, &ux_prompts_flow[G.prompt.offset], NULL);
-    THROW(ASYNC_EXCEPTION);
 }
 
 #endif // HAVE_BAGL

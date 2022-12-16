@@ -14,6 +14,7 @@ void exit_app(void); // Might want to send it arguments to use as callback
 // labels must be completely static string constants while data may be dynamic
 // Assumes we've registered appropriate callbacks to generate the data.
 // All pointers may be unrelocated.
+void ui_prompt_debug(size_t screen_count);
 void ui_prompt(const char *const *labels, ui_callback_t ok_c, ui_callback_t cxl_c);
 void ui_prompt_with_cb(void (*switch_foo)(size_t), size_t prompt_count, ui_callback_t ok_c, ui_callback_t cxl_c);
 void switch_screen(uint32_t which);

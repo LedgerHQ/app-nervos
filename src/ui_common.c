@@ -71,6 +71,25 @@ void switch_screen(uint32_t which) {
                                       global.ui.prompt.callback_data[which]);
 }
 
+void ui_prompt_debug(size_t screen_count) {
+    for(uint32_t i=0; i<screen_count; i++) {
+        global.ui.switch_screen(i);
+        PRINTF("Prompt %d:\n%s\n%s\n", i, global.ui.prompt.active_prompt, global.ui.prompt.active_value);
+    }
+}
+
+void ui_prompt(const char *const *labels, ui_callback_t ok_c, ui_callback_t cxl_c) {
+    size_t prompt_count;
+
+    check_null(labels);
+    global.ui.prompt.prompts = labels;
+    prompt_count = 0;
+    while ((prompt_count < MAX_SCREEN_COUNT) && (labels[prompt_count] != NULL)) {
+        prompt_count++;
+    }
+    ui_prompt_with_cb(switch_screen, prompt_count, ok_c, cxl_c);
+}
+
 void register_ui_callback(uint32_t which, string_generation_callback cb, const void *data) {
     if (which >= MAX_SCREEN_COUNT)
         THROW(EXC_MEMORY_ERROR);
