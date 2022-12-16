@@ -17,7 +17,7 @@
 #define _U_ __attribute__((unused))
 
 // Return number of bytes to transmit (tx)
-typedef size_t (*apdu_handler)(uint8_t instruction);
+typedef void (*apdu_handler)(uint8_t instruction);
 
 #define MAX_INT_DIGITS 20
 

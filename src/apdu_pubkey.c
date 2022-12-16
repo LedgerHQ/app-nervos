@@ -109,7 +109,7 @@ static void prompt_ext_path(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
     ui_prompt(pubkey_labels, ok_cb, cxl_cb);
 }
 
-size_t handle_apdu_get_public_key(uint8_t _U_ instruction) {
+void handle_apdu_get_public_key(uint8_t _U_ instruction) {
     const uint8_t *const dataBuffer = G_io_apdu_buffer + OFFSET_CDATA;
 
     uint8_t verify = READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_P1]);
