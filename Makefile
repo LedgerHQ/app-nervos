@@ -34,7 +34,7 @@ endif
 ifeq ($(TARGET_NAME),TARGET_NANOS)
 ICONNAME=icons/nano-s-nervos.gif
 else ifeq ($(TARGET_NAME), TARGET_STAX)
-ICONNAME=icons/stax_nervos_32px.gif
+ICONNAME=icons/stax_app_nervos.gif
 else # NANOX & NANOS+
 ICONNAME=icons/nano-x-nervos.gif
 endif
