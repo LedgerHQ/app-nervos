@@ -101,6 +101,10 @@ void ui_initial_screen(void) {
 }
 
 static nbgl_layoutTagValue_t pair;
+static nbgl_layoutTagValueList_t pair_list;
+static nbgl_pageInfoLongPress_t info_long_press;
+char tag[MAX_SCREEN_COUNT][PROMPT_WIDTH + 1];
+char value[MAX_SCREEN_COUNT][VALUE_WIDTH + 1];
 
 static void reviewChoice(bool confirm) {
     if (confirm) {
@@ -112,24 +116,13 @@ static void reviewChoice(bool confirm) {
     }
 }
 
-static bool get_data(uint8_t page, nbgl_pageContent_t *content) {
-    uint8_t screen_count = MAX_SCREEN_COUNT - global.ui.prompt.offset;
-
-    if (page < screen_count) {
-        content->type = TAG_VALUE_LIST;
-        content->tagValueList.nbPairs = 1;
-        content->tagValueList.pairs = &pair;
-        content->tagValueList.smallCaseForValue = false;
-        global.ui.switch_screen(page);
-    } else if (page == screen_count) {
-        content->type = INFO_LONG_PRESS;
-        content->infoLongPress.icon = &C_stax_nervos_64px;
-        content->infoLongPress.text = "Confirm "APPNAME" action";
-        content->infoLongPress.longPressText = "Hold to approve";
-    } else { // > screen_count
-        return false;
-    }
-    return true;
+static nbgl_layoutTagValue_t *get_pair(uint8_t index) {
+    global.ui.switch_screen(index);
+    pair.item = tag[index];
+    pair.value = value[index];
+    strcpy(pair.item, global.ui.prompt.active_prompt);
+    strcpy(pair.value, global.ui.prompt.active_value);
+    return &pair;
 }
 
 void ui_prompt_with_cb(void (*switch_screen_cb)(size_t),
@@ -137,18 +130,22 @@ void ui_prompt_with_cb(void (*switch_screen_cb)(size_t),
                        ui_callback_t ok_c,
                        ui_callback_t cxl_c) {
     check_null(switch_screen_cb);
+
+    pair_list.nbMaxLinesForValue = 0;
+    pair_list.nbPairs = prompt_count;
+    pair_list.pairs = NULL;
+    pair_list.callback = get_pair;
+    pair_list.startIndex = 0;
+
+    info_long_press.icon = &C_stax_nervos_64px;
+    info_long_press.text = "Confirm "APPNAME" action";
+    info_long_press.longPressText = "Hold to approve";
+
     global.ui.switch_screen = switch_screen_cb;
     global.ui.ok_callback = ok_c;
     global.ui.cxl_callback = cxl_c;
-    pair.item = global.ui.prompt.active_prompt;
-    pair.value = global.ui.prompt.active_value;
     global.ui.prompt.offset = MAX_SCREEN_COUNT - prompt_count;
-    nbgl_useCaseRegularReview(0,
-                              prompt_count + 1,
-                              "Reject",
-                              NULL,
-                              get_data,
-                              reviewChoice);
+    nbgl_useCaseStaticReview(&pair_list, &info_long_press, "Reject", reviewChoice);
 }
 
 
