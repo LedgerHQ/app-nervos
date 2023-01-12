@@ -106,13 +106,21 @@ static nbgl_pageInfoLongPress_t info_long_press;
 char tag[MAX_SCREEN_COUNT][PROMPT_WIDTH + 1];
 char value[MAX_SCREEN_COUNT][VALUE_WIDTH + 1];
 
+static void onConfirmAbandon(void) {
+    nbgl_useCaseStatus("Transaction rejected", false, ui_initial_screen);
+    global.ui.cxl_callback();
+}
+
 static void reviewChoice(bool confirm) {
     if (confirm) {
         nbgl_useCaseStatus("TRANSACTION\nSIGNED", true, ui_initial_screen);
         global.ui.ok_callback();
     } else {
-        global.ui.cxl_callback();
-        ui_initial_screen();
+        nbgl_useCaseConfirm("Reject transaction?",
+                            "",
+                            "Yes, Reject",
+                            "Go back to transaction",
+                            onConfirmAbandon);
     }
 }
 
