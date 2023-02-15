@@ -12,78 +12,59 @@ on:
       - develop
 
 jobs:
-  nanoS_build:
-    name: Nano S build
-    runs-on: ubuntu-latest
+  app-build:
+    name: Build app
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sdk: "$NANOS_SDK"
+            name: "nanos"
+          - sdk: "$NANOX_SDK"
+            name: "nanox"
+          - sdk: "$NANOSP_SDK"
+            name: "nanosp"
+          - sdk: "$STAX_SDK"
+            name: "stax"
 
+    runs-on: ubuntu-latest
     container:
-      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
+      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-lite:latest
 
     steps:
-    - name: Clone
-      uses: actions/checkout@v2
+      - name: Clone
+        uses: actions/checkout@v3
 
-    - name: Build
-      run: |
-        make clean
-        make
+      - name: Build
+        run: |
+          make BOLOS_SDK=${{ matrix.sdk }} -j
 
-    - name: Upload app binary
-      uses: actions/upload-artifact@v2
-      with:
-        name: nanoS-app
-        path: bin
+      - name: Rename binary
+        run: |
+          mv bin/app.elf nervos_${{ matrix.name }}.elf
 
-  nanoX_build:
-    name: Nano X build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    container:
-      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
-
-    steps:
-    - name: Clone
-      uses: actions/checkout@v2
-
-    - name: Build
-      run: |
-        make clean
-        make BOLOS_SDK=$NANOX_SDK
-
-  nanoSP_build:
-    name: Nano S+ build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    container:
-      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
-
-    steps:
-    - name: Clone
-      uses: actions/checkout@v2
-
-    - name: Build
-      run: |
-        make clean
-        make BOLOS_SDK=$NANOSP_SDK
+      - name: Upload binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: binaries
+          path: nervos_${{ matrix.name }}.elf
 
   tests:
     name: Functional tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs:
-      - nanoS_build
+      - app-build
 
     steps:
     - name: Clone
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Download app binary
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
-        name: nanoS-app
+        name: binaries
         path: bin
 
     - name: Install Speculos
@@ -92,7 +73,7 @@ jobs:
         pip install --extra-index-url https://test.pypi.org/simple/ speculos
 
     - name: Setup node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: 16
 
@@ -104,4 +85,4 @@ jobs:
     - name: Running tests
       run: ./tests/node_modules/.bin/mocha tests/ --exit --require tests/hooks.js --config tests/.mocharc.js "$@"
       env:
-        LEDGER_APP: bin/app.elf
+        LEDGER_APP: bin/nervos_nanos.elf
