@@ -58,10 +58,14 @@ void render_pkh(char *const out, size_t const out_size,
     uint8_t base32_buf[base32_max];
     size_t base32_len = 0;
     size_t payload_len = 0;
-    if (payload->s.address_format_type == ADDRESS_FORMAT_TYPE_SHORT) {
-        payload_len = sizeof(payload->s);
+    uint8_t is_bech32m = 0;
+    if (payload->full_version.address_format_type == ADDRESS_FORMAT_TYPE_FULL_VERSION) {
+        payload_len = sizeof(payload->full_version);
+        is_bech32m = 1;
+    } else if (payload->short_version.address_format_type == ADDRESS_FORMAT_TYPE_SHORT) {
+        payload_len = sizeof(payload->short_version);
     } else {
-        payload_len = sizeof(payload->f);
+        payload_len = sizeof(payload->code_hash_data_or_type);
     }
 
     if (!convert_bits(base32_buf, base32_max, &base32_len,
@@ -72,21 +76,18 @@ void render_pkh(char *const out, size_t const out_size,
         THROW(EXC_MEMORY_ERROR);
     }
     static const char hrbs[][4] = {"ckb", "ckt"};
-    if (!bech32_encode(out, out_size, hrbs[N_data.address_type&ADDRESS_TYPE_MASK], base32_buf, base32_len)) {
+    if (!bech32_encode(out, out_size, hrbs[N_data.address_type&ADDRESS_TYPE_MASK], base32_buf, base32_len, is_bech32m)) {
         THROW(EXC_MEMORY_ERROR);
     }
 }
 
 __attribute__((noreturn)) static void prompt_path(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
-    static size_t const TYPE_INDEX = 0;
-    static size_t const ADDRESS_INDEX = 1;
+    static size_t const ADDRESS_INDEX = 0;
 
     static const char *const pubkey_labels[] = {
-        PROMPT("Provide"),
         PROMPT("Address"),
         NULL,
     };
-    REGISTER_STATIC_UI_VALUE(TYPE_INDEX, "Public Key");
     register_ui_callback(ADDRESS_INDEX, lock_arg_to_sighash_address, &G.render_address_lock_arg);
     ui_prompt(pubkey_labels, ok_cb, cxl_cb);
 }
@@ -111,7 +112,8 @@ __attribute__((noreturn)) static void prompt_ext_path(ui_callback_t ok_cb, ui_ca
 size_t handle_apdu_get_public_key(uint8_t _U_ instruction) {
     const uint8_t *const dataBuffer = G_io_apdu_buffer + OFFSET_CDATA;
 
-    if (READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_P1]) != 0)
+    uint8_t verify = READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_P1]);
+    if ((verify != 0) && (verify != 1))
         THROW(EXC_WRONG_PARAM);
 
     size_t const cdata_size = READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_LC]);
@@ -124,10 +126,16 @@ size_t handle_apdu_get_public_key(uint8_t _U_ instruction) {
     generate_lock_arg_for_pubkey(&G.ext_public_key.public_key, &G.render_address_lock_arg);
 
     if (instruction == INS_PROMPT_EXT_PUBLIC_KEY) {
-      ui_callback_t cb = ext_pubkey_ok;
-      prompt_ext_path(cb, delay_reject);
+        if (verify) {
+            prompt_ext_path(ext_pubkey_ok, delay_reject);
+        } else {
+            ext_pubkey_ok();
+        }
     } else {
-      ui_callback_t cb = pubkey_ok;
-      prompt_path(cb, delay_reject);
+        if (verify) {
+            prompt_path(pubkey_ok, delay_reject);
+        } else {
+            pubkey_ok();
+        }
     }
 }
