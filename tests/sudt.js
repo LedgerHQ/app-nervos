@@ -210,7 +210,7 @@ describe("sUDT operations", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"4999.85646063"},
       {header:"Fee", body:"0.14353473"},
-      {header:"Destination", body:"ckb1qyqxxtzygxvjwhgqklqlkedlqqwhp0rqjkvsqltkvh"},
+      {header:"Destination", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtr93zyrxf8t5qt0s0mvklsq8tsh3sftxgpmvwex"},
       {header:"Contract", body:"Present"},
     ]);
 

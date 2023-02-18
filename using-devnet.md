@@ -13,8 +13,8 @@ Your new account is locked with a password. Please give a password. Do not forge
 Password: 
 Repeat password: 
 address:
-  mainnet: ckb1qyqyrm8w0w8uq7puwhdp7s6xqzdjuknhf2tqzdztph
-  testnet: ckt1qyqyrm8w0w8uq7puwhdp7s6xqzdjuknhf2tqlgu5dt
+  mainnet: ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2panh8hr7q0q78tkslgdrqpxewtfm549sdgpsln
+  testnet: ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq2panh8hr7q0q78tkslgdrqpxewtfm549sr62l4t
 lock_arg: 0x41ecee7b8fc0783c75da1f4346009b2e5a774a96
 lock_hash: 0xeb31c5232b322905b9d52350c0d0cf55987f676d86704146ce67d92ddef05ed3
 ```
