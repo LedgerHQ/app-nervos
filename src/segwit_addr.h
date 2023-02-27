@@ -22,6 +22,7 @@
 #ifndef _SEGWIT_ADDR_H_
 #define _SEGWIT_ADDR_H_
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /** Encode a SegWit address
@@ -35,7 +36,7 @@
  *       prog_len: Number of data bytes in prog.
  *  Returns 1 if successful.
  */
-int segwit_addr_encode(char *output, size_t out_len, const char *hrp, int ver, const uint8_t *prog, size_t prog_len, uint8_t is_bech32m);
+int segwit_addr_encode(char *output, size_t out_len, const char *hrp, int ver, const uint8_t *prog, size_t prog_len, bool is_bech32m);
 
 /** Decode a SegWit address
  *
@@ -64,7 +65,7 @@ int segwit_addr_decode(int *ver, uint8_t *prog, size_t prog_len_max, size_t *pro
  *      data_len: Length of the data array.
  *  Returns 1 if successful.
  */
-int bech32_encode(char *output, size_t out_len, const char *hrp, const uint8_t *data, size_t data_len, uint8_t is_bech32m);
+int bech32_encode(char *output, size_t out_len, const char *hrp, const uint8_t *data, size_t data_len, bool is_bech32m);
 
 /** Decode a Bech32 string
  *
