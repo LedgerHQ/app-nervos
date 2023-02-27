@@ -3,6 +3,13 @@
 This project's release branch is `master`.
 This log is written from the perspective of the release branch: when changes hit `master`, they are considered released.
 
+## v0.5.6 - 2023-02-27
+
+### Release Notes
+
+- Added support for new address format (full version).
+- Added support for "verify" parameter in P1 in get address / pub key commands.
+
 ## v0.5.5 - 2022-07-18
 
 ### Release Notes
