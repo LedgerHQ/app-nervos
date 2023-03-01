@@ -167,8 +167,8 @@ describe("Multi-output transaction signing", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"1000"},
       {header:"Fee", body:"0.00001"},
-      {header:"Output 1/2", body:"500 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scaqc8pnyu"},
-      {header:"Output 2/2", body:"500 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scasdxft30"},
+      {header:"Output 1/2", body:"500 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwsq5cm9r"},
+      {header:"Output 2/2", body:"500 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwc7quhm7"},
     ]);
 
     const sig = await this.ckb.signAnnotatedTransaction(txn);
@@ -355,8 +355,8 @@ describe("Multi-output transaction signing", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"600"},
       {header:"Fee", body:"400.00001"},
-      {header:"Output 1/2", body:"400 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scaqc8pnyu"},
-      {header:"Output 2/2", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7qffs5ek"},
+      {header:"Output 1/2", body:"400 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwsq5cm9r"},
+      {header:"Output 2/2", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0q6glemk"},
     ]);
 
     const sig = await this.ckb.signAnnotatedTransaction(txn);
@@ -543,9 +543,9 @@ describe("Multi-output transaction signing", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"600"},
       {header:"Fee", body:"400.00001"},
-      {header:"Output 1/3", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scaqc8pnyu"},
-      {header:"Output 2/3", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scasdxft30"},
-      {header:"Output 3/3", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7qffs5ek"},
+      {header:"Output 1/3", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwsq5cm9r"},
+      {header:"Output 2/3", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwc7quhm7"},
+      {header:"Output 3/3", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0q6glemk"},
     ]);
 
     const sig = await this.ckb.signAnnotatedTransaction(txn);
@@ -746,11 +746,11 @@ describe("Multi-output transaction signing", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"1000"},
       {header:"Fee", body:"0.00001"},
-      {header:"Output 1/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scaqc8pnyu"},
-      {header:"Output 2/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scasdxft30"},
-      {header:"Output 3/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7qffs5ek"},
-      {header:"Output 4/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scgqyqay7e"},
-      {header:"Output 5/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scgs3p4ut2"}
+      {header:"Output 1/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwsq5cm9r"},
+      {header:"Output 2/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwc7quhm7"},
+      {header:"Output 3/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0q6glemk"},
+      {header:"Output 4/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvyqgcd3v9"},
+      {header:"Output 5/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvygkvfajc"}
     ]);
 
     const sig = await this.ckb.signAnnotatedTransaction(txn);
@@ -1153,11 +1153,11 @@ it("Signing with mixed sighash and multisig formats each output correctly.", asy
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"1000"},
       {header:"Fee", body:"0.00001"},
-      {header:"Output 1/5", body:"200 CKB -> ckb1qyq72fsdswd8s6kz4yy3s80e5s3lrma7scaqvts8tg"},
-      {header:"Output 2/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scasdxft30"},
-      {header:"Output 3/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7qffs5ek"},
-      {header:"Output 4/5", body:"200 CKB -> ckb1qyq72fsdswd8s6kz4yy3s80e5s3lrma7sc7sgyfcr3"},
-      {header:"Output 5/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scgs3p4ut2"}
+      {header:"Output 1/5", body:"200 CKB -> ckb1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwsmc4ku4"},
+      {header:"Output 2/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwc7quhm7"},
+      {header:"Output 3/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0q6glemk"},
+      {header:"Output 4/5", body:"200 CKB -> ckb1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0glskcua"},
+      {header:"Output 5/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvygkvfajc"}
     ]);
 
     const sig = await this.ckb.signAnnotatedTransaction(txn);
@@ -1357,11 +1357,11 @@ it("Signing with mixed sighash, multisig, and multisig with since formats each o
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"1000"},
       {header:"Fee", body:"0.00001"},
-      {header:"Output 1/5", body:"200 CKB -> ckb1q3w9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn323efxpkpe57r2c25sjxqalxjz8u00h6rr5qgzqvzq2ps8pqntd2cj"},
-      {header:"Output 2/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scasdxft30"},
-      {header:"Output 3/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7qffs5ek"},
-      {header:"Output 4/5", body:"200 CKB -> ckb1qyq72fsdswd8s6kz4yy3s80e5s3lrma7sc7sgyfcr3"},
-      {header:"Output 5/5", body:"200 CKB -> ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7scgs3p4ut2"}
+      {header:"Output 1/5", body:"200 CKB -> ckb1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwspqgpsgpgxquyqlsmupy"},
+      {header:"Output 2/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvwc7quhm7"},
+      {header:"Output 3/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0q6glemk"},
+      {header:"Output 4/5", body:"200 CKB -> ckb1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0glskcua"},
+      {header:"Output 5/5", body:"200 CKB -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgvygkvfajc"}
     ]);
 
     const sig = await this.ckb.signAnnotatedTransaction(txn);

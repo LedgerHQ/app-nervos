@@ -41,7 +41,7 @@ static const int8_t charset_rev[128] = {
     23, -1, 18, 22, 31, 27, 19, -1, 1,  0,  3,  16, 11, 28, 12, 14, 6,  4,  2,  -1, -1, -1, -1, -1};
 
 int bech32_encode(char *const output, const size_t out_len, const char *const hrp, const uint8_t *const data,
-                  const size_t data_len, const uint8_t is_bech32m) {
+                  const size_t data_len, const bool is_bech32m) {
     uint32_t chk = 1;
     size_t out_off = 0;
     {
@@ -185,7 +185,7 @@ int convert_bits(
 }
 
 int segwit_addr_encode(char *output, size_t out_len, const char *hrp, int witver, const uint8_t *witprog,
-                       size_t witprog_len, uint8_t is_bech32m) {
+                       size_t witprog_len, bool is_bech32m) {
     const size_t data_size = 65;
     uint8_t data[data_size];
     size_t datalen = 0;

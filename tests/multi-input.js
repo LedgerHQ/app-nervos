@@ -180,10 +180,10 @@ context('Signing multi-input transactions', function() {
     const flow = await flowAccept(this.speculos, [
       { header: "Confirm", body: "Multi-Input Transaction"},                            // Prompt 0
       { header: "Input", body: "1 of 2"},                                               // Prompt 1
-      { header: "Source", body: "ckb1qyqg64fqws0sdgrz2s7da2dzrlpq6plw9xcqhuexcr"},      // Prompt 2
+      { header: "Source", body: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqvd25s8g8cx5p39g0x74x3plssdqlhznvq7r3na6"},      // Prompt 2
       { header: "Amount", body: "899.997 of 1500"},                                     // Prompt 3
       { header: "Fee", body: "0.0001"},                                                 // Prompt 4
-      { header: "Destination", body: "ckb1qyqwggd90hnw6kqp39rrzvwvkm2cg0dtjawsuayfag"}, // Prompt 5
+      { header: "Destination", body: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0yyxjhmehdtqqcj333x8xtd4vy8k4ewhghpqjgc"}, // Prompt 5
     ]);
 
     const signature = await this.ckb.signAnnotatedTransaction(createMultiInputTx);
@@ -197,10 +197,10 @@ context('Signing multi-input transactions', function() {
   it("Signing valid multi-input tx should pass - 2 - (Input 2)", async function() {
     // wallet transfer
     // --from-account 0x8d5520741f06a062543cdea9a21fc20d07ee29b0
-    // --to-address ckt1qyqwggd90hnw6kqp39rrzvwvkm2cg0dtjawspc6k35
+    // --to-address ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0yyxjhmehdtqqcj333x8xtd4vy8k4ewhgentazq
     // --capacity 3200
     // --tx-fee 0.0001
-    // --derive-change-address ckt1qyqxyt6gphlcwvw3tjpj6g35ae8da5x0uwvqrprflz
+    // --derive-change-address ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtz9ayqmlu8x8g4eqedyg6wunk76r878xqsjx9fh
     // --derive-change-address-length 6
 
     const signPath = [
@@ -387,10 +387,10 @@ context('Signing multi-input transactions', function() {
     const flow = await flowAccept(this.speculos, [
       { header: "Confirm", body: "Multi-Input Transaction"},                       // Prompt 0
       { header: "Input", body: "2 of 2"},                                          // Prompt 1
-      { header: "Source", body: "ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7sugcvv9"}, // Prompt 2
+      { header: "Source", body: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0gyum49t"}, // Prompt 2
       { header: "Amount", body: "1000 of 1500"}, // Prompt 3 (ORIGINAL)
       { header: "Fee", body: "0.0001"},          // Prompt 4 (ORIGINAL)
-      { header: "Destination", body: "ckb1qyqwggd90hnw6kqp39rrzvwvkm2cg0dtjawsuayfag"}, // Prompt 5
+      { header: "Destination", body: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0yyxjhmehdtqqcj333x8xtd4vy8k4ewhghpqjgc"}, // Prompt 5
     ]);
 
     const signature = await this.ckb.signAnnotatedTransaction(createMultiInputTx2);
@@ -404,18 +404,18 @@ context('Signing multi-input transactions', function() {
   it('Signing valid multi-input tx should pass - 2 - (Input 1, 1 cell)', async function() {
     // Prompt 0: Confirm Multi-Input Transaction
     // Prompt 1: Input 1 of 2
-    // Prompt 2: Source ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7sugcvv9
+    // Prompt 2: Source ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0gyum49t
     // Prompt 3: Amount 2500 of 3200
     // Prompt 4: Fee 0.0001
-    // Prompt 5: Destination ckb1qyqwggd90hnw6kqp39rrzvwvkm2cg0dtjawsuayfag
+    // Prompt 5: Destination ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0yyxjhmehdtqqcj333x8xtd4vy8k4ewhghpqjgc
 
     const flow = await flowAccept(this.speculos, [
       { header: "Confirm", body: "Multi-Input Transaction"},                            // Prompt 0
       { header: "Input", body: "1 of 2"},                                               // Prompt 1
-      { header: "Source", body: "ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7sugcvv9"},      // Prompt 2
+      { header: "Source", body: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0gyum49t"},      // Prompt 2
       { header: "Amount", body: "2500 of 3200"},                                        // Prompt 3
       { header: "Fee", body: "0.0001"},                                                 // Prompt 4
-      { header: "Destination", body: "ckb1qyqwggd90hnw6kqp39rrzvwvkm2cg0dtjawsuayfag"}, // Prompt 5
+      { header: "Destination", body: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0yyxjhmehdtqqcj333x8xtd4vy8k4ewhghpqjgc"}, // Prompt 5
     ]);
 
     const signPath = [
@@ -911,18 +911,18 @@ context('Signing multi-input transactions', function() {
 
     // Prompt 0: Confirm Multi-Input Transaction
     // Prompt 1: Input 2 of 2
-    // Prompt 2: Source ckb1qyqxt33570n599su3f88zxg38zn3ae00jkgsqt8fcx
+    // Prompt 2: Source ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqt9cc608e6zjcwg5nn3rygn3fc7uhhetygv2lu28
     // Prompt 3: Amount 3939.999 of 3200
     // Prompt 4: Fee 0.0001
-    // Prompt 5: Destination ckb1qyqwggd90hnw6kqp39rrzvwvkm2cg0dtjawsuayfag
+    // Prompt 5: Destination ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0yyxjhmehdtqqcj333x8xtd4vy8k4ewhghpqjgc
 
     const flow = await flowAccept(this.speculos, [
       { header: "Confirm", body: "Multi-Input Transaction"},                            // Prompt 0
       { header: "Input", body: "2 of 2"},                                               // Prompt 1
-      { header: "Source", body: "ckb1qyqxt33570n599su3f88zxg38zn3ae00jkgsqt8fcx"},      // Prompt 2
+      { header: "Source", body: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqt9cc608e6zjcwg5nn3rygn3fc7uhhetygv2lu28"},      // Prompt 2
       { header: "Amount", body: "3939.999 of 3200"},                                        // Prompt 3
       { header: "Fee", body: "0.0001"},                                                 // Prompt 4
-      { header: "Destination", body: "ckb1qyqwggd90hnw6kqp39rrzvwvkm2cg0dtjawsuayfag"}, // Prompt 5
+      { header: "Destination", body: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0yyxjhmehdtqqcj333x8xtd4vy8k4ewhghpqjgc"}, // Prompt 5
     ]);
 
 
@@ -1640,18 +1640,18 @@ context('Signing multi-input transactions', function() {
 
     // Prompt 0: Confirm Multi-Input Transaction
     // Prompt 1: Input 6 of 6
-    // Prompt 2: Source ckb1qyqxyt6gphlcwvw3tjpj6g35ae8da5x0uwvq7yakn7
+    // Prompt 2: Source ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtz9ayqmlu8x8g4eqedyg6wunk76r878xq7qd2r0
     // Prompt 3: Amount 1659.9988 of 14000
     // Prompt 4: Fee 0.0001
-    // Prompt 5: Destination ckb1qyqwggd90hnw6kqp39rrzvwvkm2cg0dtjawsuayfag
+    // Prompt 5: Destination ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0yyxjhmehdtqqcj333x8xtd4vy8k4ewhghpqjgc
 
     const flow = await flowAccept(this.speculos, [
       { header: "Confirm", body: "Multi-Input Transaction"},                            // Prompt 0
       { header: "Input", body: "6 of 6"},                                               // Prompt 1
-      { header: "Source", body: "ckb1qyqxyt6gphlcwvw3tjpj6g35ae8da5x0uwvq7yakn7"},      // Prompt 2
+      { header: "Source", body: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtz9ayqmlu8x8g4eqedyg6wunk76r878xq7qd2r0"},      // Prompt 2
       { header: "Amount", body: "1659.9988 of 14000"},                                     // Prompt 3
       { header: "Fee", body: "0.0001"},                                                 // Prompt 4
-      { header: "Destination", body: "ckb1qyqwggd90hnw6kqp39rrzvwvkm2cg0dtjawsuayfag"}, // Prompt 5
+      { header: "Destination", body: "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0yyxjhmehdtqqcj333x8xtd4vy8k4ewhghpqjgc"}, // Prompt 5
     ]);
 
     const signature = await this.ckb.signAnnotatedTransaction(createMultiInputTx5);

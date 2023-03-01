@@ -5,7 +5,7 @@ context('Public Keys', function () {
 
     expect(key).to.have.property('publicKey').to.equal('04d066dbe5603004dc4c83e27106b098f5e9b9b17b6bdec965810cd0921193b1c87206518153a0b44c7ae6b0be92a60d515d454e71ab27943bbb323273b8bdd46a');
     expect(key).to.have.property('lockArg').to.equal('a3912c9414bfd45b830478c05385dfa4d560c859');
-    expect(key).to.have.property('address').to.equal('ckb1qyq28yfvjs2tl4zmsvz83sznsh06f4tqepvsc3zqeu');
+    expect(key).to.have.property('address').to.equal('ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdrjykfg99l63dcxprccpfcthay64svskg7y2cn8');
 
     await flow.promptsPromise;
   });
@@ -15,7 +15,7 @@ context('Public Keys', function () {
       this.speculos,
       [
         {header:"Provide", body:"Public Key"},
-        {header:"Address", body:"ckb1qyqtdy8k8dhu574l7a79tzll5aqpa3qdedfquq4vvy"}
+        {header:"Address", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdkjrmrkm7202llwlz430l6wsq7csxuk5szt5wcu"}
       ]
     );
 
@@ -24,7 +24,7 @@ context('Public Keys', function () {
 
     expect(key).to.have.property('publicKey').to.equal('0457aa28c6e9e4f188e54bd687c34391920d2b53c2c83251cb93275cb955b83c35db429b5c5a8559a2deb2e5056f82468b1612b1ea94d75028ef8dfcd952ee0d84');
     expect(key).to.have.property('lockArg').to.equal('b690f63b6fca7abff77c558bffa7401ec40dcb52');
-    expect(key).to.have.property('address').to.equal('ckb1qyqtdy8k8dhu574l7a79tzll5aqpa3qdedfquq4vvy');
+    expect(key).to.have.property('address').to.equal('ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdkjrmrkm7202llwlz430l6wsq7csxuk5szt5wcu');
 
     await flow.promptsPromise;
   });

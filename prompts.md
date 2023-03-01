@@ -68,7 +68,7 @@ The prompts for transfers differ based on which command is used and the number o
 |   `Confirm`   	|   `Amount`   	|    `Fee`   	|     `Output <num>/<total>`     	|     (repeat Prompt 4)     	|
 | `Transaction` 	| `<capacity>` 	| `<tx-fee>` 	|  `<capacity> -> <to-address>` 	|     (repeat Prompt 4)     	|
 
-Prompt 4 repeats as necessary for each of the operation's outputs. Examples of the top and bottom line are `Output 2/3` and `300 -> ckb1qyqxxtzygxvjwhgqklqlkedlqqwhp0rqjkvsqltkvh`. 
+Prompt 4 repeats as necessary for each of the operation's outputs. Examples of the top and bottom line are `Output 2/3` and `300 -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtr93zyrxf8t5qt0s0mvklsq8tsh3sftxgpmvwex`. 
 Note: The operation's change will appear as an output prompt.
 
 #### 2+ Input Addresses, 1 Output Address (`wallet transfer`)
@@ -101,7 +101,7 @@ These prompts will appear once each time they are the command is run with a `fro
 |         `Confirm`         	|       `Input`      	|       `Source`      	|                `Amount`                	|    `Fee`   	|    `Output <num>/<total>`    	|
 | `Multi-Input Transaction` 	| `<num> of <total>` 	| `<sighash address>` 	| `<input's amount> of <total-capacity>` 	| `<tx-fee>` 	| `<capacity> -> <to-address>` 	|
 
-Prompt 6 repeats as necessary for each of the operation's outputs. Examples of the top and bottom line are `Output 2/3` and `300 -> ckb1qyqxxtzygxvjwhgqklqlkedlqqwhp0rqjkvsqltkvh`. 
+Prompt 6 repeats as necessary for each of the operation's outputs. Examples of the top and bottom line are `Output 2/3` and `300 -> ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtr93zyrxf8t5qt0s0mvklsq8tsh3sftxgpmvwex`. 
 
 Notes:
 1. The operation's change will appear as an output prompt.

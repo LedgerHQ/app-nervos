@@ -58,7 +58,7 @@ void render_pkh(char *const out, size_t const out_size,
     uint8_t base32_buf[base32_max];
     size_t base32_len = 0;
     size_t payload_len = 0;
-    uint8_t is_bech32m = 0;
+    bool is_bech32m = 0;
     if (payload->full_version.address_format_type == ADDRESS_FORMAT_TYPE_FULL_VERSION) {
         payload_len = sizeof(payload->full_version);
         is_bech32m = 1;

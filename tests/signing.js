@@ -4,7 +4,7 @@ describe("Signing transactions", () => {
       {header:"Confirm", body:"Self-Transfer"},
       {header:"Amount", body:"2011.73959913"},
       {header:"Fee", body:"0.01"},
-      {header:"Destination", body:"ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7sugcvv9"},
+      {header:"Destination", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0gyum49t"},
     ]);
 
     const signPath = [
@@ -219,7 +219,7 @@ describe("Signing transactions", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"200"},
       {header:"Fee", body:"0.001"},
-      {header:"Destination", body:"ckb1qyq0js0a0d04aumk2cdr95x9kza3e5gcqttq46cate"},
+      {header:"Destination", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq0eg87hkh677dm9vx3j6rzmpwcu6yvq94szclcq0"},
     ]);
 
     const signPath = [
@@ -350,7 +350,7 @@ describe("Signing transactions", () => {
       {header:"Confirm", body:"Self-Transfer"},
       {header:"Amount", body:"5999.999"},
       {header:"Fee", body:"0.001"},
-      {header:"Destination", body:"ckb1qyqqtw74sngmqqqzauwulk6e3rc0l46gmuxquwdcdl"},
+      {header:"Destination", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqg9h02cf5dsqqpw78w0mdvc3u8l6ayd7rqxahzur"},
     ]);
 
     const signPath = [
@@ -482,7 +482,7 @@ describe("Signing transactions", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"1560"},
       {header:"Fee", body:"0.001"},
-      {header:"Destination", body:"ckb1qyq2yksyd5g6jkumltkrx35qvz6hdlypatlslmrhdc"},
+      {header:"Destination", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqdztgzx6ydftwdl4mpng6qxpdtkljq74lct0hds2"},
     ]);
 
     const signPath = [
@@ -614,7 +614,7 @@ describe("Signing transactions", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"1400"},
       {header:"Fee", body:"0.001"},
-      {header:"Destination", body:"ckb1qyq8rzpfgmy86chektett03mu66uyuz0a3vstntx4r"},
+      {header:"Destination", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqt33q55djravtum9u44hca7ddwzwp87ckgsl4gxn"},
     ]);
 
     const signPath = [
@@ -746,7 +746,7 @@ describe("Signing transactions", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"900"},
       {header:"Fee", body:"0.001"},
-      {header:"Destination", body:"ckb1qyqljq0w3nk3gyu0xmztt9c4f02rtqujt3ts069qc6"},
+      {header:"Destination", body:"ckb1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sq0eq8hgemg5zw8nd394ju25h4p4swf9c4cqpejsr"},
     ]);
 
     const signPath = [
@@ -930,7 +930,7 @@ describe("Signing transactions", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"300"},
       {header:"Fee", body:"0.001"},
-      {header:"Destination", body:"ckb1q3w9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn323x9vd6ppzz5775yjxd6mlh977m7e0xu2ccqqqquqgzq8yqvzdv4v"},
+      {header:"Destination", body:"ckb1qpw9q60tppt7l3j7r09qcp7lxnp3vcanvgha8pmvsa3jplykxn32sqvc43hgyyg2nm6sjgeht07uhmm0m9um3trqqqqrspqgqusq396e5v"},
     ]);
 
     const signPath = [
@@ -1121,7 +1121,7 @@ describe("Signing transactions", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"499.999"},
       {header:"Fee", body:"0.001"},
-      {header:"Destination", body:"ckb1qyqvph9q9t9643hufg56y0dxls75z4j4c4ws0enyar"},
+      {header:"Destination", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwqmjsz4ja2cm7y52dz8kn0c02p2e2u2hgtvv0wg"},
     ]);
 
     const signPath = [
@@ -1239,7 +1239,7 @@ describe("Signing transactions", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"1799.999"},
       {header:"Fee", body:"0.001"},
-      {header:"Destination", body:"ckb1qyqvcnnchptm36j8wvzfykkq7eahxj9cvassyxfpys"},
+      {header:"Destination", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqwvfeuts4acafrhxpyjttq0v7mnfzuxwcg76k94n"},
     ]);
 
     const signPath = [
@@ -1564,7 +1564,7 @@ describe("Signing transactions", () => {
       {header:"Confirm", body:"Transaction"},
       {header:"Amount", body:"1000"},
       {header:"Fee", body:"0.01"},
-      {header:"Destination", body:"ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7sugcvv9"},
+      {header:"Destination", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0gyum49t"},
     ]);
 
     const signPath = [

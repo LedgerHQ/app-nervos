@@ -4,7 +4,7 @@ describe("DAO operations", () => {
       {header:"Confirm DAO", body:"Deposit"},
       {header:"Deposit Amount", body:"1000"},
       {header:"Fee", body:"0.01"},
-      {header:"Cell Owner", body:"ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7sugcvv9"},
+      {header:"Cell Owner", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0gyum49t"},
     ]);
 
     const signPath = [
@@ -222,7 +222,7 @@ describe("DAO operations", () => {
       {header:"Confirm DAO", body:"Prepare"},
       {header:"Deposit Amount", body:"1000"},
       {header:"Fee", body:"0.01"},
-      {header:"Cell Owner", body:"ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7sugcvv9"},
+      {header:"Cell Owner", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0gyum49t"},
     ]);
 
     await this.ckb.signAnnotatedTransaction({
@@ -445,7 +445,7 @@ describe("DAO operations", () => {
       {header:"Confirm DAO", body:"Withdrawal"},
       {header:"Deposit Amount", body:"1000"},
       {header:"Compensation", body:"2.89011952"},
-      {header:"Cell Owner", body:"ckb1qyqw2fsdswd8s6kz4yy3s80e5s3lrma7sc7sugcvv9"},
+      {header:"Cell Owner", body:"ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq09ycxc8xncdtp2jzgcrhu6ggl3a7lgv0gyum49t"},
     ]);
 
     await this.ckb.signAnnotatedTransaction({
