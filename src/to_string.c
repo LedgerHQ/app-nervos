@@ -214,10 +214,12 @@ void buffer_to_hex(char *const out, size_t const out_size, buffer_t const *const
 
 void lock_arg_to_sighash_address(char *const dest, size_t const buff_size, lock_arg_t const *const lock_arg) {
     render_address_payload_t render_address_payload;
-    render_address_payload.s.address_format_type = ADDRESS_FORMAT_TYPE_SHORT;
-    render_address_payload.s.code_hash_index = ADDRESS_CODE_HASH_TYPE_SIGHASH;
+    render_address_payload.full_version.address_format_type = ADDRESS_FORMAT_TYPE_FULL_VERSION;
+    memcpy(&render_address_payload.full_version.code_hash, defaultLockScript,
+           sizeof(render_address_payload.full_version.code_hash));
+    render_address_payload.full_version.hash_type = 1;
 
-    memcpy(&render_address_payload.s.hash, lock_arg->hash, sizeof(render_address_payload.s.hash));
+    memcpy(&render_address_payload.full_version.hash, lock_arg->hash, sizeof(render_address_payload.full_version.hash));
     render_pkh(dest, buff_size, &render_address_payload);
 }
 
@@ -231,15 +233,16 @@ void lock_arg_to_multisig_address(char *const dest, size_t const buff_size, lock
         }
     }
     if (has_timelock) {
-        render_address_payload.f.address_format_type = ADDRESS_FORMAT_TYPE_FULL_TYPE;
-        memcpy(&render_address_payload.f.code_hash, multisigLockScript,
-               sizeof(render_address_payload.f.code_hash));
-        memcpy(&render_address_payload.f.lock_arg, lock_arg, sizeof(render_address_payload.f.lock_arg));
+        render_address_payload.code_hash_data_or_type.address_format_type = ADDRESS_FORMAT_TYPE_CODE_HASH_TYPE;
+        memcpy(&render_address_payload.code_hash_data_or_type.code_hash, multisigLockScript,
+               sizeof(render_address_payload.code_hash_data_or_type.code_hash));
+        memcpy(&render_address_payload.code_hash_data_or_type.lock_arg, lock_arg, sizeof(render_address_payload.code_hash_data_or_type.lock_arg));
     } else {
-        render_address_payload.s.address_format_type = ADDRESS_FORMAT_TYPE_SHORT;
-        render_address_payload.s.code_hash_index = ADDRESS_CODE_HASH_TYPE_MULTISIG;
-        memcpy(&render_address_payload.s.hash, lock_arg->hash,
-               sizeof(render_address_payload.s.hash));
+        render_address_payload.full_version.address_format_type = ADDRESS_FORMAT_TYPE_FULL_VERSION;
+        memcpy(&render_address_payload.full_version.code_hash, multisigLockScript,
+               sizeof(render_address_payload.full_version.code_hash));
+        memcpy(&render_address_payload.full_version.hash, lock_arg->hash,
+               sizeof(render_address_payload.full_version.hash));
     }
 
     render_pkh(dest, buff_size, &render_address_payload);

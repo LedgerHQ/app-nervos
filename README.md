@@ -311,8 +311,8 @@ They will be shown even if the device is not connected.
 CKB> account list
 - "#": 0
   address:
-    mainnet: ckb1qyqg64fqws0sdgrz2s7da2dzrlpq6plw9xcqhuexcr
-    testnet: ckt1qyqg64fqws0sdgrz2s7da2dzrlpq6plw9xcq2e8e5l
+    mainnet: ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqvd25s8g8cx5p39g0x74x3plssdqlhznvq7r3na6
+    testnet: ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqvd25s8g8cx5p39g0x74x3plssdqlhznvqs36uhz
   has_ckb_root: false
   lock_arg: 0x8d5520741f06a062543cdea9a21fc20d07ee29b0
   lock_hash: 0xe8e5dbae54d1ae5257ea55c1fbc210ef5521e0707b0d59bfb17e9f344ef96b7f
@@ -328,8 +328,8 @@ Confirm this to import the account. This operation will provide the extended pub
 ``` sh
 CKB> account import-from-plugin --account-id 0x9c6e60f3e812ef5c859bbc900f427bffe63294c5490f93e4e50beb688c0798bf
 address:
-  mainnet: ckb1qyqg64fqws0sdgrz2s7da2dzrlpq6plw9xcqhuexcr
-  testnet: ckt1qyqg64fqws0sdgrz2s7da2dzrlpq6plw9xcq2e8e5l
+  mainnet: ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqvd25s8g8cx5p39g0x74x3plssdqlhznvq7r3na6
+  testnet: ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqvd25s8g8cx5p39g0x74x3plssdqlhznvqs36uhz
 lock_arg: 0x8d5520741f06a062543cdea9a21fc20d07ee29b0
 ```
 
@@ -365,7 +365,7 @@ This should show up on the ledger as 2 prompts:
 |   Prompt 1   	|                     Prompt 2                     	|
 |:------------:	|:------------------------------------------------:	|
 |   `Provide`  	|                     `Address`                    	|
-| `Public Key` 	| `ckb1qyqxxtzygxvjwhgqklqlkedlqqwhp0rqjkvsqltkvh` 	|
+| `Public Key` 	| `ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtr93zyrxf8t5qt0s0mvklsq8tsh3sftxgpmvwex` 	|
 
 **Verifying the output address printed by `ckb-cli` matches the one shown on Ledger prompt is highly recommended. Please read [Ledger's documentation](https://support.ledger.com/hc/en-us/articles/360006433934) on the subject.**
 
@@ -375,8 +375,8 @@ After accepting the prompt on the Ledger the output on `ckb-cli` will show infor
  
 ``` text
 address:
-  mainnet: ckb1qyqxxtzygxvjwhgqklqlkedlqqwhp0rqjkvsqltkvh
-  testnet: ckt1qyqxxtzygxvjwhgqklqlkedlqqwhp0rqjkvsa64fqt
+  mainnet: ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtr93zyrxf8t5qt0s0mvklsq8tsh3sftxgpmvwex
+  testnet: ckt1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqtr93zyrxf8t5qt0s0mvklsq8tsh3sftxg0f8pn7
 lock_arg: 0x632c444199275d00b7c1fb65bf001d70bc609599
 lock_hash: 0xee0283c2d991992d6e015a4680c54318ad42c820ca0dc862c0a1d68c415499a8
 ```

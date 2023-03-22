@@ -41,7 +41,7 @@ static const int8_t charset_rev[128] = {
     23, -1, 18, 22, 31, 27, 19, -1, 1,  0,  3,  16, 11, 28, 12, 14, 6,  4,  2,  -1, -1, -1, -1, -1};
 
 int bech32_encode(char *const output, const size_t out_len, const char *const hrp, const uint8_t *const data,
-                  const size_t data_len) {
+                  const size_t data_len, const bool is_bech32m) {
     uint32_t chk = 1;
     size_t out_off = 0;
     {
@@ -78,7 +78,7 @@ int bech32_encode(char *const output, const size_t out_len, const char *const hr
     for (size_t i = 0; i < 6; ++i) {
         chk = bech32_polymod_step(chk);
     }
-    chk ^= 1;
+    chk ^= is_bech32m ? 0x2bc830a3 : 1;
     for (size_t i = 0; i < 6; ++i) {
         if (out_off >= out_len)
             return 0;
@@ -185,7 +185,7 @@ int convert_bits(
 }
 
 int segwit_addr_encode(char *output, size_t out_len, const char *hrp, int witver, const uint8_t *witprog,
-                       size_t witprog_len) {
+                       size_t witprog_len, bool is_bech32m) {
     const size_t data_size = 65;
     uint8_t data[data_size];
     size_t datalen = 0;
@@ -198,7 +198,7 @@ int segwit_addr_encode(char *output, size_t out_len, const char *hrp, int witver
     data[0] = witver;
     convert_bits(data + 1, data_size, &datalen, 5, witprog, witprog_len, 8, 1);
     ++datalen;
-    return bech32_encode(output, out_len, hrp, data, datalen);
+    return bech32_encode(output, out_len, hrp, data, datalen, is_bech32m);
 }
 
 int segwit_addr_decode(int *witver, uint8_t *witdata, size_t witdata_len_max, size_t *witdata_len, const char *hrp,
