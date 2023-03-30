@@ -194,17 +194,6 @@ void ui_initial_screen(void) {
 
 }
 
-void switch_screen(uint32_t which) {
-    if (which >= MAX_SCREEN_COUNT)
-        THROW(EXC_MEMORY_ERROR);
-    const char *label = (const char *)PIC(global.ui.prompt.prompts[which]);
-    strncpy(global.ui.prompt.active_prompt, label, sizeof(global.ui.prompt.active_prompt));
-    if (global.ui.prompt.callbacks[which] == NULL)
-        THROW(EXC_MEMORY_ERROR);
-    global.ui.prompt.callbacks[which](global.ui.prompt.active_value, sizeof(global.ui.prompt.active_value),
-                                      global.ui.prompt.callback_data[which]);
-}
-
 void ui_prompt_debug(size_t screen_count) {
     for(uint32_t i=0; i<screen_count; i++) {
         G.switch_screen(i);
@@ -212,7 +201,6 @@ void ui_prompt_debug(size_t screen_count) {
     }
 }
 
-__attribute__((noreturn))
 void ui_prompt(const char *const *labels, ui_callback_t ok_c, ui_callback_t cxl_c) {
     check_null(labels);
     global.ui.prompt.prompts = labels;
@@ -236,7 +224,7 @@ void ui_prompt(const char *const *labels, ui_callback_t ok_c, ui_callback_t cxl_
     THROW(ASYNC_EXCEPTION);
 }
 
-__attribute__((noreturn)) void ui_prompt_with_cb(void (*switch_screen_cb)(uint32_t), size_t screen_count, ui_callback_t ok_c, ui_callback_t cxl_c) {
+void ui_prompt_with_cb(void (*switch_screen_cb)(uint32_t), size_t screen_count, ui_callback_t ok_c, ui_callback_t cxl_c) {
     check_null(switch_screen_cb);
     if(screen_count>MAX_SCREEN_COUNT) THROW(EXC_MEMORY_ERROR);
 

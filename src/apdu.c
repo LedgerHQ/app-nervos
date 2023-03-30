@@ -102,7 +102,7 @@ void measure_stack_max() {
 
 #define CLA 0x80
 
-__attribute__((noreturn)) void main_loop(apdu_handler const *const handlers, size_t const handlers_size) {
+void main_loop(apdu_handler const *const handlers, size_t const handlers_size) {
     volatile size_t rx = io_exchange(CHANNEL_APDU, 0);
     while (true) {
         BEGIN_TRY {

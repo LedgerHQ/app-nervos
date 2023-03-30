@@ -60,6 +60,17 @@ unsigned char io_event(__attribute__((unused)) unsigned char channel) {
     return 1;
 }
 
+void switch_screen(uint32_t which) {
+    if (which >= MAX_SCREEN_COUNT)
+        THROW(EXC_MEMORY_ERROR);
+    const char *label = (const char *)PIC(global.ui.prompt.prompts[which]);
+    strncpy(global.ui.prompt.active_prompt, label, sizeof(global.ui.prompt.active_prompt));
+    if (global.ui.prompt.callbacks[which] == NULL)
+        THROW(EXC_MEMORY_ERROR);
+    global.ui.prompt.callbacks[which](global.ui.prompt.active_value, sizeof(global.ui.prompt.active_value),
+                                      global.ui.prompt.callback_data[which]);
+}
+
 void register_ui_callback(uint32_t which, string_generation_callback cb, const void *data) {
     if (which >= MAX_SCREEN_COUNT)
         THROW(EXC_MEMORY_ERROR);

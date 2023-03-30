@@ -19,7 +19,7 @@ static bool account_import_ok(void) {
     return true;
 }
 
-__attribute__((noreturn)) static void prompt_account_import(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
+static void prompt_account_import(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
     static size_t const TYPE_INDEX = 0;
 
     static const char *const labels[] = {

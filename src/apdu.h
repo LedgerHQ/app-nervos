@@ -34,7 +34,7 @@
 #define INS_GIT                       0x09
 #define INS_SIGN_WITH_HASH            0x0F
 
-__attribute__((noreturn)) void main_loop(apdu_handler const *const handlers, size_t const handlers_size);
+void main_loop(apdu_handler const *const handlers, size_t const handlers_size);
 
 static inline size_t finalize_successful_send(size_t tx) {
     G_io_apdu_buffer[tx++] = 0x90;
