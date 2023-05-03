@@ -5,7 +5,7 @@ include $(BOLOS_SDK)/Makefile.defines
 
 APPNAME = "Nervos"
 
-APP_LOAD_PARAMS= --appFlags 0 --curve secp256k1 --path "44'/309'" $(COMMON_LOAD_PARAMS)
+APP_LOAD_PARAMS= --curve secp256k1 --path "44'/309'" $(COMMON_LOAD_PARAMS)
 
 GIT_DESCRIBE ?= $(shell git describe --tags --abbrev=8 --always --long --dirty 2>/dev/null)
 
@@ -69,6 +69,8 @@ APP_LOAD_PARAMS += --appFlags 0x240 # with BLE support
 DEFINES   += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000
 DEFINES   += HAVE_BLE_APDU # basic ledger apdu transport over BLE
 SDK_SOURCE_PATH  += lib_blewbxx lib_blewbxx_impl
+else
+APP_LOAD_PARAMS += --appFlags 0x000
 endif
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
@@ -78,7 +80,6 @@ DEFINES   += IO_SEPROXYHAL_BUFFER_SIZE_B=300
 endif
 
 ifeq ($(TARGET_NAME),TARGET_STAX)
-DEFINES   += HAVE_NBGL
 DEFINES   += NBGL_QRCODE
 else
 DEFINES   += HAVE_BAGL HAVE_UX_FLOW
@@ -160,10 +161,7 @@ include $(BOLOS_SDK)/Makefile.glyphs
 APP_SOURCE_PATH  += src
 SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl
 
-ifeq ($(TARGET_NAME),TARGET_STAX)
-SDK_SOURCE_PATH += lib_nbgl/src
-SDK_SOURCE_PATH += lib_ux_stax
-else
+ifneq ($(TARGET_NAME),TARGET_STAX)
 SDK_SOURCE_PATH += lib_ux
 endif
 

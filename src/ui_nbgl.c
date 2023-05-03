@@ -125,6 +125,7 @@ static void reviewChoice(bool confirm) {
 }
 
 static nbgl_layoutTagValue_t *get_pair(uint8_t index) {
+    // Out-of-bounds check on index done in switch_screen function
     global.ui.switch_screen(index);
     pair.item = tag[index];
     pair.value = value[index];
