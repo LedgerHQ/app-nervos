@@ -991,7 +991,7 @@ static size_t handle_apdu(uint8_t const instruction) {
             PRINTF("Initializing parser\n");
             MolReader_AnnotatedTransaction_init_state((struct AnnotatedTransaction_state*) &G.transaction_stack, &annotatedTransaction_callbacks);
             PRINTF("Initialized parser\n");
-            // NO BREAK
+            __attribute__((fallthrough));
         case P1_NEXT:
             if(G.maybe_transaction.hard_reject) THROW(EXC_PARSE_ERROR);
             PRINTF("Calling parser\n");
@@ -1124,7 +1124,7 @@ static void replace_undisplayable(uint8_t *buff, uint8_t *buff_size) {
   const uint8_t four_bytes = 240; // 1111 0000
   const uint8_t three_bytes = 224; // 1110 0000
   const uint8_t two_bytes = 192;  // 1100 0000
-  uint8_t tmp_buff [*buff_size];
+  uint8_t tmp_buff [0xff]; // 0xff, the largest *buff_size could be
   memcpy(tmp_buff, buff, *buff_size);
   memset(buff, 0, *buff_size);
   const uint8_t tmp_size = *buff_size;
@@ -1190,7 +1190,7 @@ static void handle_apdu_sign_message_impl(uint8_t const __attribute__((unused)) 
     // Ensure the message begins with "Nervos Message:"
     if(!check_magic_bytes(buff, buff_size)) THROW(EXC_PARSE_ERROR);
 
-    uint8_t tmp_msg_buff[buff_size];
+    uint8_t tmp_msg_buff[0xff]; // 0xff, the largest buff_size could be
     uint8_t tmp_msg_buff_size = buff_size;
 
     // Move msg, so we dont hash the same data that we mutate

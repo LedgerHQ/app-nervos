@@ -40,8 +40,8 @@ size_t read_bip32_path(bip32_path_t *const out, uint8_t const *const in, size_t 
     if (out->length == 0 || out->length > NUM_ELEMENTS(out->components))
         THROW(EXC_WRONG_VALUES);
 
-    for (size_t i = 0; i < out->length; i++) {
-        out->components[i] = CONSUME_UNALIGNED_BIG_ENDIAN(ix, uint32_t, &buf_as_bip32->components[i]);
+    for (size_t idx = 0; idx < out->length; idx++) {
+        out->components[idx] = CONSUME_UNALIGNED_BIG_ENDIAN(ix, uint32_t, &buf_as_bip32->components[idx]);
     }
 
     return ix;
@@ -93,15 +93,14 @@ size_t sign(uint8_t *const out, size_t const out_size, key_pair_t const *const p
 
     explicit_bzero(out, OUT_SIZE);
 
-    static size_t const SIG_SIZE = 100;
-    uint8_t sig[SIG_SIZE];
+    uint8_t sig[100];
     explicit_bzero(sig, sizeof(sig));
 
     unsigned int info = 0;
 
     cx_ecdsa_sign(&pair->private_key, CX_LAST | CX_RND_RFC6979,
                   CX_SHA256, // historical reasons...semantically CX_NONE
-                  (uint8_t const *const)PIC(in), in_size, sig, SIG_SIZE, &info);
+                  (uint8_t const *const)PIC(in), in_size, sig, sizeof(sig), &info);
 
     // Converting to compressed format
     int const r_size = sig[3];

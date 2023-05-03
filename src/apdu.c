@@ -172,22 +172,22 @@ void main_loop(apdu_handler const *const handlers, size_t const handlers_size) {
                 switch (sw) {
                 default:
                     sw = 0x6800 | (e & 0x7FF);
-                    // FALL THROUGH
+                    __attribute__((fallthrough));
                 case 0x6000 ... 0x6FFF:
                 case 0x9000 ... 0x9FFF: {
                     PRINTF("Line number: %d", sw & 0x0FFF);
-                    size_t tx = 0;
+                    tx = 0;
                     G_io_apdu_buffer[tx++] = sw >> 8;
                     G_io_apdu_buffer[tx++] = sw;
-                    rx = io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
+                    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
                     break;
                 }
                 case 0xA000 ... 0xAFFF: {
                     PRINTF("Other error: %x\n", sw);
-                    size_t tx = 0;
+                    tx = 0;
                     G_io_apdu_buffer[tx++] = sw >> 8;
                     G_io_apdu_buffer[tx++] = sw;
-                    rx = io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
+                    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
                     break;
 					}
                 }

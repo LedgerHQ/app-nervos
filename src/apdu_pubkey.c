@@ -54,8 +54,7 @@ static void bip32_path_to_string(char *const out, size_t const out_size, apdu_pu
 
 void render_pkh(char *const out, size_t const out_size,
                 render_address_payload_t const *const payload) {
-    const size_t base32_max = 256;
-    uint8_t base32_buf[base32_max];
+    uint8_t base32_buf[256];
     size_t base32_len = 0;
     size_t payload_len = 0;
     bool is_bech32m = 0;
@@ -68,7 +67,7 @@ void render_pkh(char *const out, size_t const out_size,
         payload_len = sizeof(payload->code_hash_data_or_type);
     }
 
-    if (!convert_bits(base32_buf, base32_max, &base32_len,
+    if (!convert_bits(base32_buf, sizeof(base32_buf), &base32_len,
                       5,
                       (const uint8_t *)payload, payload_len,
                       8,
