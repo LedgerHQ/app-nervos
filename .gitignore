@@ -2,6 +2,7 @@
 /debug
 /dep
 /obj
+build/
 
 node_modules/
 src/glyphs.h

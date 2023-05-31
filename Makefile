@@ -5,7 +5,7 @@ include $(BOLOS_SDK)/Makefile.defines
 
 APPNAME = "Nervos"
 
-APP_LOAD_PARAMS= --appFlags 0 --curve secp256k1 --path "44'/309'" $(COMMON_LOAD_PARAMS)
+APP_LOAD_PARAMS= --curve secp256k1 --path "44'/309'" $(COMMON_LOAD_PARAMS)
 
 GIT_DESCRIBE ?= $(shell git describe --tags --abbrev=8 --always --long --dirty 2>/dev/null)
 
@@ -33,7 +33,9 @@ endif
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
 ICONNAME=icons/nano-s-nervos.gif
-else
+else ifeq ($(TARGET_NAME), TARGET_STAX)
+ICONNAME=icons/stax_app_nervos.gif
+else # NANOX & NANOS+
 ICONNAME=icons/nano-x-nervos.gif
 endif
 
@@ -53,31 +55,42 @@ show-app:
 ############
 
 DEFINES   += OS_IO_SEPROXYHAL
-DEFINES   += HAVE_BAGL HAVE_SPRINTF
+DEFINES   += HAVE_SPRINTF
 DEFINES   += HAVE_IO_USB HAVE_L4_USBLIB IO_USB_MAX_ENDPOINTS=6 IO_HID_EP_LENGTH=64 HAVE_USB_APDU
 DEFINES   += HAVE_LEGACY_PID
 DEFINES   += VERSION=\"$(APPVERSION)\" APPVERSION_M=$(APPVERSION_M)
 DEFINES   += COMMIT=\"$(COMMIT)\" APPVERSION_N=$(APPVERSION_N) APPVERSION_P=$(APPVERSION_P)
 # DEFINES   += _Static_assert\(...\)=
+DEFINES   += APPNAME=\"$(APPNAME)\"
+DEFINES   += UNUSED\(x\)=\(void\)x
 
-ifeq ($(TARGET_NAME),TARGET_NANOX)
+ifneq (,$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
 APP_LOAD_PARAMS += --appFlags 0x240 # with BLE support
 DEFINES   += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000
 DEFINES   += HAVE_BLE_APDU # basic ledger apdu transport over BLE
 SDK_SOURCE_PATH  += lib_blewbxx lib_blewbxx_impl
+else
+APP_LOAD_PARAMS += --appFlags 0x000
 endif
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
 DEFINES   += IO_SEPROXYHAL_BUFFER_SIZE_B=128
-DEFINES   += HAVE_UX_FLOW
 else
 DEFINES   += IO_SEPROXYHAL_BUFFER_SIZE_B=300
-DEFINES   += HAVE_GLO096 HAVE_UX_FLOW
-DEFINES   += HAVE_BAGL BAGL_WIDTH=128 BAGL_HEIGHT=64
+endif
+
+ifeq ($(TARGET_NAME),TARGET_STAX)
+DEFINES   += NBGL_QRCODE
+else
+DEFINES   += HAVE_BAGL HAVE_UX_FLOW
+ifneq ($(TARGET_NAME),TARGET_NANOS)
+DEFINES   += HAVE_GLO096
+DEFINES   += BAGL_WIDTH=128 BAGL_HEIGHT=64
 DEFINES   += HAVE_BAGL_ELLIPSIS # long label truncation feature
 DEFINES   += HAVE_BAGL_FONT_OPEN_SANS_REGULAR_11PX
 DEFINES   += HAVE_BAGL_FONT_OPEN_SANS_EXTRABOLD_11PX
 DEFINES   += HAVE_BAGL_FONT_OPEN_SANS_LIGHT_16PX
+endif
 endif
 
 # Enabling debug PRINTF
@@ -106,7 +119,6 @@ ifneq ($(BOLOS_ENV),)
 $(info BOLOS_ENV=$(BOLOS_ENV))
 CLANGPATH := $(BOLOS_ENV)/clang-arm-fropi/bin/
 GCCPATH := $(BOLOS_ENV)/gcc-arm-none-eabi-5_3-2016q1/bin/
-CFLAGS += -idirafter $(BOLOS_ENV)/gcc-arm-none-eabi-5_3-2016q1/arm-none-eabi/include
 else
 $(info BOLOS_ENV is not set: falling back to CLANGPATH and GCCPATH)
 endif
@@ -132,13 +144,11 @@ CC       := $(CLANGPATH)clang
 AS       := $(GCCPATH)$(TOOL_PREFIX)gcc
 endif
 
-CFLAGS   += -O3 -Os -Wall -Wextra
 ifneq ($(USE_NIX),)
 CFLAGS   += -mcpu=sc000
 endif
 
 LD       := $(GCCPATH)$(TOOL_PREFIX)gcc
-LDFLAGS  += -O3 -Os
 ifneq ($(USE_NIX),)
 LDFLAGS  += -mcpu=sc000
 endif
@@ -149,7 +159,11 @@ include $(BOLOS_SDK)/Makefile.glyphs
 
 ### computed variables
 APP_SOURCE_PATH  += src
-SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl lib_ux
+SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl
+
+ifneq ($(TARGET_NAME),TARGET_STAX)
+SDK_SOURCE_PATH += lib_ux
+endif
 
 ### U2F support (wallet app only)
 SDK_SOURCE_PATH  += lib_u2f

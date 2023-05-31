@@ -6,7 +6,7 @@
 
 #include "globals.h"
 
-__attribute__((noreturn)) void app_main(void);
+void app_main(void);
 
 __attribute__((section(".boot"))) int main(void) {
     // exit critical section

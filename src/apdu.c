@@ -3,6 +3,7 @@
 #include "to_string.h"
 #include "version.h"
 #include "key_macros.h"
+#include "ux.h" // G_ux
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -32,24 +33,24 @@ size_t provide_ext_pubkey(uint8_t *const io_buffer, extended_public_key_t const 
     return finalize_successful_send(tx);
 }
 
-size_t handle_apdu_error(uint8_t __attribute__((unused)) instruction) {
+void handle_apdu_error(uint8_t __attribute__((unused)) instruction) {
     THROW(EXC_INVALID_INS);
 }
 
-size_t handle_apdu_version(uint8_t __attribute__((unused)) instruction) {
+void handle_apdu_version(uint8_t __attribute__((unused)) instruction) {
     memcpy(G_io_apdu_buffer, &version, sizeof(version_t));
     size_t tx = sizeof(version_t);
-    return finalize_successful_send(tx);
+    delay_successful(tx);
 }
 
-size_t handle_apdu_git(uint8_t __attribute__((unused)) instruction) {
+void handle_apdu_git(uint8_t __attribute__((unused)) instruction) {
     static const char commit[] = COMMIT;
     memcpy(G_io_apdu_buffer, commit, sizeof(commit));
     size_t tx = sizeof(commit);
-    return finalize_successful_send(tx);
+    delay_successful(tx);
 }
 
-size_t handle_apdu_get_wallet_id(uint8_t __attribute__((unused)) instruction) {
+void handle_apdu_get_wallet_id(uint8_t __attribute__((unused)) instruction) {
     // blake2b hash of "nervos-ledger-id"
     static const uint8_t _U_ token[] = {0xc1, 0x30, 0xae, 0x5b, 0xf2, 0xfb, 0x61, 0xe3, 0x9e, 0x41, 0x9d, 0xc5, 0x8a,
                                         0x45, 0x4f, 0x4a, 0xb4, 0xb6, 0xe4, 0xb6, 0xdb, 0x0b, 0x4b, 0x34, 0x60, 0xc3,
@@ -75,13 +76,15 @@ size_t handle_apdu_get_wallet_id(uint8_t __attribute__((unused)) instruction) {
                       rv = cx_hash((cx_hash_t *)&hashState, CX_LAST, (uint8_t *)key_pair->public_key.W,
                                    key_pair->public_key.W_len, G_io_apdu_buffer, sizeof(G_io_apdu_buffer));
                   }));
-    return finalize_successful_send(rv);
+    delay_successful(rv);
 }
 
 #ifdef STACK_MEASURE
 __attribute__((noinline)) void stack_sentry_fill() {
   uint32_t* p;
   volatile int top;
+
+  (void)p;
   top=5;
   memset((void*)(&app_stack_canary+1), 42, ((uint8_t*)(&top-10))-((uint8_t*)&app_stack_canary));
 }
@@ -89,7 +92,7 @@ __attribute__((noinline)) void stack_sentry_fill() {
 void measure_stack_max() {
   uint32_t* p;
   volatile int top;
-  for(p=&app_stack_canary+1; p<((&top)-10); p++)
+  for(p=(uint32_t*)&app_stack_canary+1; p<(uint32_t*)((&top)-10); p++)
     if(*p != 0x2a2a2a2a) {
 	    PRINTF("Free space between globals and maximum stack: %d\n", 4*(p-&app_stack_canary));
 	    return;
@@ -99,14 +102,21 @@ void measure_stack_max() {
 
 #define CLA 0x80
 
-__attribute__((noreturn)) void main_loop(apdu_handler const *const handlers, size_t const handlers_size) {
-    volatile size_t rx = io_exchange(CHANNEL_APDU, 0);
+void main_loop(apdu_handler const *const handlers, size_t const handlers_size) {
+    unsigned short rx = 0;
+    unsigned short tx = 0;
+    unsigned char flags = 0;
+
     while (true) {
         BEGIN_TRY {
             TRY {
                 app_stack_canary=0xdeadbeef;
                 // Process APDU of size rx
 
+                rx = tx;
+                tx = 0;
+                rx = io_exchange(CHANNEL_APDU | flags, rx);
+                flags = 0;
                 if (rx == 0) {
                     // no apdu received, well, reset the session, and reset the
                     // bootloader configuration
@@ -132,25 +142,24 @@ __attribute__((noreturn)) void main_loop(apdu_handler const *const handlers, siz
 
                 apdu_handler const cb = instruction >= handlers_size ? handle_apdu_error : handlers[instruction];
 
-		PRINTF("SIZOF1: %d SIZEOF2: %d\n", sizeof(G_ux), sizeof(G_ux_params));
-		PRINTF("Calling handler\n");
-                size_t const tx = cb(instruction);
-		PRINTF("Normal return\n");
+                PRINTF("SIZOF1: %d SIZEOF2: %d\n", sizeof(G_ux), sizeof(G_ux_params));
+                PRINTF("Calling handler\n");
+                cb(instruction);
+                PRINTF("Normal return\n");
 
                 if(0xdeadbeef != app_stack_canary) {
                     THROW(EXC_STACK_ERROR);
                 }
 #ifdef STACK_MEASURE
-		measure_stack_max();
+                measure_stack_max();
 #endif
 
-                rx = io_exchange(CHANNEL_APDU, tx);
+                flags |= IO_ASYNCH_REPLY;
             }
             CATCH(ASYNC_EXCEPTION) {
 #ifdef STACK_MEASURE
-		measure_stack_max();
+                measure_stack_max();
 #endif
-                rx = io_exchange(CHANNEL_APDU | IO_ASYNCH_REPLY, 0);
             }
             CATCH(EXCEPTION_IO_RESET) {
                 THROW(EXCEPTION_IO_RESET);
@@ -163,22 +172,22 @@ __attribute__((noreturn)) void main_loop(apdu_handler const *const handlers, siz
                 switch (sw) {
                 default:
                     sw = 0x6800 | (e & 0x7FF);
-                    // FALL THROUGH
+                    __attribute__((fallthrough));
                 case 0x6000 ... 0x6FFF:
                 case 0x9000 ... 0x9FFF: {
                     PRINTF("Line number: %d", sw & 0x0FFF);
-                    size_t tx = 0;
+                    tx = 0;
                     G_io_apdu_buffer[tx++] = sw >> 8;
                     G_io_apdu_buffer[tx++] = sw;
-                    rx = io_exchange(CHANNEL_APDU, tx);
+                    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
                     break;
                 }
                 case 0xA000 ... 0xAFFF: {
                     PRINTF("Other error: %x\n", sw);
-                    size_t tx = 0;
+                    tx = 0;
                     G_io_apdu_buffer[tx++] = sw >> 8;
                     G_io_apdu_buffer[tx++] = sw;
-                    rx = io_exchange(CHANNEL_APDU, tx);
+                    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
                     break;
 					}
                 }

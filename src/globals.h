@@ -155,10 +155,6 @@ typedef struct {
         ui_callback_t ok_callback;
         ui_callback_t cxl_callback;
 
-        uint32_t ux_step;
-        uint32_t ux_step_count;
-
-        uint32_t timeout_cycle_count;
         void (*switch_screen)(uint32_t which);
 
         struct {
@@ -170,7 +166,8 @@ typedef struct {
 
             // This will and must always be static memory full of constants
             const char *const *prompts;
-	    size_t offset;
+
+            size_t offset;
         } prompt;
     } ui;
 
@@ -198,13 +195,6 @@ extern const uint8_t blake2b_personalization[17];
 
 extern unsigned int volatile app_stack_canary; // From SDK
 
-// Used by macros that we don't control.
-#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
-extern ux_state_t G_ux;
-extern bolos_ux_params_t G_ux_params;
-#else
-extern ux_state_t ux;
-#endif
 extern unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 static inline void throw_stack_size() {
@@ -217,12 +207,12 @@ static inline void throw_stack_size() {
 void calculate_baking_idle_screens_data(void);
 void update_baking_idle_screens(void);
 
-#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
-    extern nvram_data const N_data_real;
-#   define N_data (*(volatile nvram_data *)PIC(&N_data_real))
-#else
+#if defined(TARGET_NANOS)
     extern nvram_data N_data_real;
 #   define N_data (*(nvram_data*)PIC(&N_data_real))
+#else
+    extern nvram_data const N_data_real;
+#   define N_data (*(volatile nvram_data *)PIC(&N_data_real))
 #endif
 
 
