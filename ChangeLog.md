@@ -3,6 +3,12 @@
 This project's release branch is `master`.
 This log is written from the perspective of the release branch: when changes hit `master`, they are considered released.
 
+## v0.5.7 - 2023-11-08
+
+### Release Notes
+
+- Stax support
+
 ## v0.5.6 - 2023-02-27
 
 ### Release Notes
