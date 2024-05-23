@@ -22,7 +22,7 @@ void ui_prompt_debug(size_t screen_count) {
     }
 }
 
-__attribute__((noreturn)) void ui_prompt_with_cb(void (*switch_screen_cb)(size_t), size_t screen_count,
+void ui_prompt_with_cb(void (*switch_screen_cb)(size_t), size_t screen_count,
                                                  ui_callback_t ok_c, ui_callback_t cxl_c) {
     check_null(switch_screen_cb);
     if (screen_count > MAX_SCREEN_COUNT)
@@ -41,7 +41,7 @@ __attribute__((noreturn)) void ui_prompt_with_cb(void (*switch_screen_cb)(size_t
     THROW(ASYNC_EXCEPTION);
 }
 
-__attribute__((noreturn)) void ui_prompt(const char *const *labels, ui_callback_t ok_c, ui_callback_t cxl_c) {
+void ui_prompt(const char *const *labels, ui_callback_t ok_c, ui_callback_t cxl_c) {
     check_null(labels);
     global.ui.prompt.prompts = labels;
 

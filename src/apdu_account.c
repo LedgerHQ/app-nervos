@@ -19,7 +19,7 @@ static bool account_import_ok(void) {
     return true;
 }
 
-__attribute__((noreturn)) static void prompt_account_import(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
+static void prompt_account_import(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
     static size_t const TYPE_INDEX = 0;
 
     static const char *const labels[] = {
@@ -30,7 +30,7 @@ __attribute__((noreturn)) static void prompt_account_import(ui_callback_t ok_cb,
     ui_prompt(labels, ok_cb, cxl_cb);
 }
 
-size_t handle_apdu_account_import(uint8_t _U_ instruction) {
+void handle_apdu_account_import(uint8_t _U_ instruction) {
     if (READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_P1]) != 0)
         THROW(EXC_WRONG_PARAM);
 

@@ -3,9 +3,7 @@
 #include "exception.h"
 #include "to_string.h"
 
-#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 #include "ux.h"
-#endif
 
 #include <string.h>
 
@@ -43,52 +41,47 @@ void init_globals(void) {
 
 // DO NOT TRY TO INIT THIS. This can only be written via an system call.
 // The "N_" is *significant*. It tells the linker to put this in NVRAM.
-#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
-nvram_data const N_data_real;
-#else
+#if defined(TARGET_NANOS)
 nvram_data N_data_real;
+#else
+nvram_data const N_data_real;
 #endif
-
-static const char prompt_on[] = "On";
-static const char prompt_off[] = "Off";
-static const char mainnet_prompt[] = "mainnet";
-static const char testnet_prompt[] = "testnet";
 
 void switch_network() {
     nvram_data data;
-    memcpy(&data, &N_data, sizeof(nvram_data));
+    memcpy(&data, (const void*)&N_data, sizeof(nvram_data));
     const bool isMain = data.address_type == ADDRESS_MAINNET;
     data.address_type = isMain ? ADDRESS_TESTNET : ADDRESS_MAINNET;
     if(isMain)
-      strcpy(data.network_prompt, testnet_prompt);
+      strcpy(data.network_prompt, "testnet");
     else
-      strcpy(data.network_prompt, mainnet_prompt);
+      strcpy(data.network_prompt, "mainnet");
 
     nvm_write((void*)&N_data, (void*)&data, sizeof(N_data));
 }
 void switch_sign_hash() {
     nvram_data data;
-    memcpy(&data, &N_data, sizeof(nvram_data));
-    const bool isOn = data.sign_hash_type == SIGN_HASH_ON; 
+    memcpy(&data, (const void*)&N_data, sizeof(nvram_data));
+    const bool isOn = data.sign_hash_type == SIGN_HASH_ON;
     data.sign_hash_type = isOn ? SIGN_HASH_OFF : SIGN_HASH_ON;
     if(isOn)
-      strcpy(data.sign_hash_prompt, prompt_off);
+      strcpy(data.sign_hash_prompt, "Off");
     else
-      strcpy(data.sign_hash_prompt, prompt_on);
+      strcpy(data.sign_hash_prompt, "On");
     nvm_write((void*)&N_data, (void*)&data, sizeof(N_data));
 }
 void switch_contract_data() {
     nvram_data data;
-    memcpy(&data, &N_data, sizeof(nvram_data));
+    memcpy(&data, (const void*)&N_data, sizeof(nvram_data));
     const bool isOn = data.contract_data_type == ALLOW_CONTRACT_DATA;
     data.contract_data_type = isOn ? DISALLOW_CONTRACT_DATA : ALLOW_CONTRACT_DATA;
     if(isOn)
-      strcpy(data.contract_data_prompt, prompt_off);
+      strcpy(data.contract_data_prompt, "Off");
     else
-      strcpy(data.contract_data_prompt, prompt_on);
+      strcpy(data.contract_data_prompt, "On");
     nvm_write((void*)&N_data, (void*)&data, sizeof(N_data));
 }
 
-#if !defined(TARGET_NANOX) && !defined(TARGET_NANOS2)
+#if defined(TARGET_NANOS)
 _Static_assert(sizeof global <= 2120, "Size of globals_t exceeds the tested working limit");
 #endif

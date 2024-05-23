@@ -106,7 +106,7 @@ void frac_ckb_tuple_to_string_indirect(char *const dest, size_t const buff_size,
         THROW(EXC_WRONG_LENGTH);
     size_t out_len = 0;
     out_len += frac_ckb_to_string(dest + out_len, tuple->fst);
-    strcpy(dest + out_len, of_str);
+    strncpy(dest + out_len, of_str, buff_size - out_len);
     out_len += strlen(of_str);
     frac_ckb_to_string(dest + out_len, tuple->snd);
 }
@@ -186,7 +186,7 @@ void copy_string(char *const dest, size_t const buff_size, char const *const src
     // I don't care that we will loop through the string twice, latency is not an issue
     if (strlen(src_in) >= buff_size)
         THROW(EXC_WRONG_LENGTH);
-    strcpy(dest, src_in);
+    strncpy(dest, src_in, buff_size);
 }
 
 void bin_to_hex(char *const out, size_t const out_size, uint8_t const *const in, size_t const in_size) {
@@ -256,7 +256,7 @@ void uint64_tuple_to_string(char *const dest, size_t const buff_size, uint64_tup
     size_t out_len = 0;
     out_len += number_to_string(dest + out_len, tuple->fst);
     char const of_str[] = " of ";
-    strcpy(dest + out_len, of_str);
+    strncpy(dest + out_len, of_str, buff_size - out_len);
     out_len += strlen(of_str);
     number_to_string(dest + out_len, tuple->snd);
 }

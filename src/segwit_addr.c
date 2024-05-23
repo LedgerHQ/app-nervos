@@ -186,8 +186,7 @@ int convert_bits(
 
 int segwit_addr_encode(char *output, size_t out_len, const char *hrp, int witver, const uint8_t *witprog,
                        size_t witprog_len, bool is_bech32m) {
-    const size_t data_size = 65;
-    uint8_t data[data_size];
+    uint8_t data[65];
     size_t datalen = 0;
     if (witver > 16)
         return 0;
@@ -196,18 +195,17 @@ int segwit_addr_encode(char *output, size_t out_len, const char *hrp, int witver
     if (witprog_len < 2 || witprog_len > 40)
         return 0;
     data[0] = witver;
-    convert_bits(data + 1, data_size, &datalen, 5, witprog, witprog_len, 8, 1);
+    convert_bits(data + 1, sizeof(data), &datalen, 5, witprog, witprog_len, 8, 1);
     ++datalen;
     return bech32_encode(output, out_len, hrp, data, datalen, is_bech32m);
 }
 
 int segwit_addr_decode(int *witver, uint8_t *witdata, size_t witdata_len_max, size_t *witdata_len, const char *hrp,
                        const char *addr) {
-    const size_t data_max = 84;
-    uint8_t data[data_max];
+    uint8_t data[84];
     char hrp_actual[84];
     size_t data_len;
-    if (!bech32_decode(hrp_actual, data, data_max, &data_len, addr))
+    if (!bech32_decode(hrp_actual, data, sizeof(data), &data_len, addr))
         return 0;
     if (data_len == 0 || data_len > 65)
         return 0;

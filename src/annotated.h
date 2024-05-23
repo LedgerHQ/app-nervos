@@ -199,12 +199,14 @@ MOLECULE_API_DECORATOR  mol_rv          MolReader_AnnotatedCellInput_parse      
             MOL_INIT_NUM();
             if(size!=MOL_NUM_MAX && s->total_size != size) return REJECT;
             s->state_num++;
+            __attribute__((fallthrough));
         case 1:
             switch(s->field_idx) {
                 case 0: {
                     MOL_CALL_NUM(s->input_offset);
                     MOL_INIT_NUM();
                     s->field_idx++;
+                    __attribute__((fallthrough));
                 }
                 case 1: {
                     MOL_CALL_NUM(s->source_offset);
@@ -216,12 +218,14 @@ MOLECULE_API_DECORATOR  mol_rv          MolReader_AnnotatedCellInput_parse      
             s->field_idx=0;
             MOL_INIT_SUBPARSER(input, CellInput);
             if(cb && cb->offsets) MOL_PIC(cb->offsets)(s);
+            __attribute__((fallthrough));
         case 2:
             switch(s->field_idx) {
             case 0: {
                 MOL_CALL_SUBPARSER(input, CellInput, s->source_offset - s->input_offset);
                 MOL_INIT_SUBPARSER(source, RawTransaction);
                 s->field_idx++;
+                __attribute__((fallthrough));
             }
             case 1: {
                 MOL_CALL_SUBPARSER(source, RawTransaction, s->total_size-s->source_offset);
@@ -260,11 +264,13 @@ MOLECULE_API_DECORATOR  mol_rv          MolReader_AnnotatedCellInputVec_parse   
             }
             if(size != MOL_NUM_MAX && size != s->total_size) return REJECT;
             s->state_num++;
+            __attribute__((fallthrough));
         case 1:
             MOL_CALL_NUM(s->first_offset);
             MOL_INIT_NUM();
             s->field_idx=1;
             s->state_num++;
+            __attribute__((fallthrough));
         case 2:
             while(s->field_idx < (s->first_offset>>2)-1) {
                 mol_num_t scratch;
@@ -277,6 +283,7 @@ MOLECULE_API_DECORATOR  mol_rv          MolReader_AnnotatedCellInputVec_parse   
             s->state_num++;
             if(cb && cb->length) MOL_PIC(cb->length)((s->first_offset>>2)-1);
             if(cb && cb->index) MOL_PIC(cb->index)(s->field_idx);
+            __attribute__((fallthrough));
         case 3:
             while(s->field_idx < (s->first_offset>>2)-1) {
                 MOL_CALL_SUBPARSER(item, AnnotatedCellInput, -1)
@@ -305,32 +312,38 @@ MOLECULE_API_DECORATOR  mol_rv          MolReader_AnnotatedRawTransaction_parse 
             MOL_INIT_NUM();
             if(size!=MOL_NUM_MAX && s->total_size != size) return REJECT;
             s->state_num++;
+            __attribute__((fallthrough));
         case 1:
             switch(s->field_idx) {
                 case 0: {
                     MOL_CALL_NUM(s->version_offset);
                     MOL_INIT_NUM();
                     s->field_idx++;
+                    __attribute__((fallthrough));
                 }
                 case 1: {
                     MOL_CALL_NUM(s->cell_deps_offset);
                     MOL_INIT_NUM();
                     s->field_idx++;
+                    __attribute__((fallthrough));
                 }
                 case 2: {
                     MOL_CALL_NUM(s->header_deps_offset);
                     MOL_INIT_NUM();
                     s->field_idx++;
+                    __attribute__((fallthrough));
                 }
                 case 3: {
                     MOL_CALL_NUM(s->inputs_offset);
                     MOL_INIT_NUM();
                     s->field_idx++;
+                    __attribute__((fallthrough));
                 }
                 case 4: {
                     MOL_CALL_NUM(s->outputs_offset);
                     MOL_INIT_NUM();
                     s->field_idx++;
+                    __attribute__((fallthrough));
                 }
                 case 5: {
                     MOL_CALL_NUM(s->outputs_data_offset);
@@ -342,32 +355,38 @@ MOLECULE_API_DECORATOR  mol_rv          MolReader_AnnotatedRawTransaction_parse 
             s->field_idx=0;
             MOL_INIT_SUBPARSER(version, Uint32);
             if(cb && cb->offsets) MOL_PIC(cb->offsets)(s);
+            __attribute__((fallthrough));
         case 2:
             switch(s->field_idx) {
             case 0: {
                 MOL_CALL_SUBPARSER(version, Uint32, s->cell_deps_offset - s->version_offset);
                 MOL_INIT_SUBPARSER(cell_deps, CellDepVec);
                 s->field_idx++;
+                __attribute__((fallthrough));
             }
             case 1: {
                 MOL_CALL_SUBPARSER(cell_deps, CellDepVec, s->header_deps_offset - s->cell_deps_offset);
                 MOL_INIT_SUBPARSER(header_deps, Byte32Vec);
                 s->field_idx++;
+                __attribute__((fallthrough));
             }
             case 2: {
                 MOL_CALL_SUBPARSER(header_deps, Byte32Vec, s->inputs_offset - s->header_deps_offset);
                 MOL_INIT_SUBPARSER(inputs, AnnotatedCellInputVec);
                 s->field_idx++;
+                __attribute__((fallthrough));
             }
             case 3: {
                 MOL_CALL_SUBPARSER(inputs, AnnotatedCellInputVec, s->outputs_offset - s->inputs_offset);
                 MOL_INIT_SUBPARSER(outputs, CellOutputVec);
                 s->field_idx++;
+                __attribute__((fallthrough));
             }
             case 4: {
                 MOL_CALL_SUBPARSER(outputs, CellOutputVec, s->outputs_data_offset - s->outputs_offset);
                 MOL_INIT_SUBPARSER(outputs_data, BytesVec);
                 s->field_idx++;
+                __attribute__((fallthrough));
             }
             case 5: {
                 MOL_CALL_SUBPARSER(outputs_data, BytesVec, s->total_size-s->outputs_data_offset);
@@ -425,27 +444,32 @@ MOLECULE_API_DECORATOR  mol_rv          MolReader_AnnotatedTransaction_parse    
             MOL_INIT_NUM();
             if(size!=MOL_NUM_MAX && s->total_size != size) return REJECT;
             s->state_num++;
+            __attribute__((fallthrough));
         case 1:
             switch(s->field_idx) {
                 case 0: {
                     MOL_CALL_NUM(s->signPath_offset);
                     MOL_INIT_NUM();
                     s->field_idx++;
+                    __attribute__((fallthrough));
                 }
                 case 1: {
                     MOL_CALL_NUM(s->changePath_offset);
                     MOL_INIT_NUM();
                     s->field_idx++;
+                    __attribute__((fallthrough));
                 }
                 case 2: {
                     MOL_CALL_NUM(s->inputCount_offset);
                     MOL_INIT_NUM();
                     s->field_idx++;
+                    __attribute__((fallthrough));
                 }
                 case 3: {
                     MOL_CALL_NUM(s->raw_offset);
                     MOL_INIT_NUM();
                     s->field_idx++;
+                    __attribute__((fallthrough));
                 }
                 case 4: {
                     MOL_CALL_NUM(s->witnesses_offset);
@@ -457,27 +481,32 @@ MOLECULE_API_DECORATOR  mol_rv          MolReader_AnnotatedTransaction_parse    
             s->field_idx=0;
             MOL_INIT_SUBPARSER(signPath, Bip32);
             if(cb && cb->offsets) MOL_PIC(cb->offsets)(s);
+            __attribute__((fallthrough));
         case 2:
             switch(s->field_idx) {
             case 0: {
                 MOL_CALL_SUBPARSER(signPath, Bip32, s->changePath_offset - s->signPath_offset);
                 MOL_INIT_SUBPARSER(changePath, Bip32);
                 s->field_idx++;
+                __attribute__((fallthrough));
             }
             case 1: {
                 MOL_CALL_SUBPARSER(changePath, Bip32, s->inputCount_offset - s->changePath_offset);
                 MOL_INIT_SUBPARSER(inputCount, Uint32);
                 s->field_idx++;
+                __attribute__((fallthrough));
             }
             case 2: {
                 MOL_CALL_SUBPARSER(inputCount, Uint32, s->raw_offset - s->inputCount_offset);
                 MOL_INIT_SUBPARSER(raw, AnnotatedRawTransaction);
                 s->field_idx++;
+                __attribute__((fallthrough));
             }
             case 3: {
                 MOL_CALL_SUBPARSER(raw, AnnotatedRawTransaction, s->witnesses_offset - s->raw_offset);
                 MOL_INIT_SUBPARSER(witnesses, BytesVec);
                 s->field_idx++;
+                __attribute__((fallthrough));
             }
             case 4: {
                 MOL_CALL_SUBPARSER(witnesses, BytesVec, s->total_size-s->witnesses_offset);

@@ -3,7 +3,6 @@
 #include "exception.h"
 #include "os.h"
 #include "cx.h"
-#include "ux.h"
 #include "os_io_seproxyhal.h"
 
 #include <stdbool.h>
@@ -18,7 +17,7 @@
 #define _U_ __attribute__((unused))
 
 // Return number of bytes to transmit (tx)
-typedef size_t (*apdu_handler)(uint8_t instruction);
+typedef void (*apdu_handler)(uint8_t instruction);
 
 #define MAX_INT_DIGITS 20
 
@@ -213,22 +212,6 @@ struct parsed_transaction {
     ({                                                                                                                 \
         _Static_assert(sizeof(buff) >= sizeof(x) && sizeof(*x) == sizeof(char), "String won't fit in buffer");         \
         strcpy(buff, x);                                                                                               \
-    })
-
-#undef MAX
-#define MAX(a, b)                                                                                                      \
-    ({                                                                                                                 \
-        __typeof__(a) ____a_ = (a);                                                                                    \
-        __typeof__(b) ____b_ = (b);                                                                                    \
-        ____a_ > ____b_ ? ____a_ : ____b_;                                                                             \
-    })
-
-#undef MIN
-#define MIN(a, b)                                                                                                      \
-    ({                                                                                                                 \
-        __typeof__(a) ____a_ = (a);                                                                                    \
-        __typeof__(b) ____b_ = (b);                                                                                    \
-        ____a_ < ____b_ ? ____a_ : ____b_;                                                                             \
     })
 
 #define ADDRESS_TYPE_MASK 1

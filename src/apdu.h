@@ -34,7 +34,7 @@
 #define INS_GIT                       0x09
 #define INS_SIGN_WITH_HASH            0x0F
 
-__attribute__((noreturn)) void main_loop(apdu_handler const *const handlers, size_t const handlers_size);
+void main_loop(apdu_handler const *const handlers, size_t const handlers_size);
 
 static inline size_t finalize_successful_send(size_t tx) {
     G_io_apdu_buffer[tx++] = 0x90;
@@ -45,6 +45,11 @@ static inline size_t finalize_successful_send(size_t tx) {
 // Send back response; do not restart the event loop
 static inline void delayed_send(size_t tx) {
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
+}
+
+static inline void delay_successful(size_t tx) {
+    tx = finalize_successful_send(tx);
+    delayed_send(tx);
 }
 
 static inline bool delay_reject(void) {
@@ -64,8 +69,8 @@ static inline void require_hid(void) {
 size_t provide_pubkey(uint8_t *const io_buffer, cx_ecfp_public_key_t const *const pubkey);
 size_t provide_ext_pubkey(uint8_t *const io_buffer, extended_public_key_t const *const pubkey);
 
-size_t handle_apdu_error(uint8_t instruction);
-size_t handle_apdu_version(uint8_t instruction);
-size_t handle_apdu_git(uint8_t instruction);
-size_t handle_apdu_get_wallet_id(uint8_t instruction);
-size_t handle_apdu_account_import(uint8_t instruction);
+void handle_apdu_error(uint8_t instruction);
+void handle_apdu_version(uint8_t instruction);
+void handle_apdu_git(uint8_t instruction);
+void handle_apdu_get_wallet_id(uint8_t instruction);
+void handle_apdu_account_import(uint8_t instruction);

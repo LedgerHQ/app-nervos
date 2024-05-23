@@ -54,8 +54,7 @@ static void bip32_path_to_string(char *const out, size_t const out_size, apdu_pu
 
 void render_pkh(char *const out, size_t const out_size,
                 render_address_payload_t const *const payload) {
-    const size_t base32_max = 256;
-    uint8_t base32_buf[base32_max];
+    uint8_t base32_buf[256];
     size_t base32_len = 0;
     size_t payload_len = 0;
     bool is_bech32m = 0;
@@ -68,7 +67,7 @@ void render_pkh(char *const out, size_t const out_size,
         payload_len = sizeof(payload->code_hash_data_or_type);
     }
 
-    if (!convert_bits(base32_buf, base32_max, &base32_len,
+    if (!convert_bits(base32_buf, sizeof(base32_buf), &base32_len,
                       5,
                       (const uint8_t *)payload, payload_len,
                       8,
@@ -81,7 +80,7 @@ void render_pkh(char *const out, size_t const out_size,
     }
 }
 
-__attribute__((noreturn)) static void prompt_path(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
+static void prompt_path(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
     static size_t const ADDRESS_INDEX = 0;
 
     static const char *const pubkey_labels[] = {
@@ -92,7 +91,7 @@ __attribute__((noreturn)) static void prompt_path(ui_callback_t ok_cb, ui_callba
     ui_prompt(pubkey_labels, ok_cb, cxl_cb);
 }
 
-__attribute__((noreturn)) static void prompt_ext_path(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
+static void prompt_ext_path(ui_callback_t ok_cb, ui_callback_t cxl_cb) {
     static size_t const TYPE_INDEX = 0;
     static size_t const DRV_PATH_INDEX = 1;
     static size_t const ADDRESS_INDEX = 2;
@@ -109,7 +108,7 @@ __attribute__((noreturn)) static void prompt_ext_path(ui_callback_t ok_cb, ui_ca
     ui_prompt(pubkey_labels, ok_cb, cxl_cb);
 }
 
-size_t handle_apdu_get_public_key(uint8_t _U_ instruction) {
+void handle_apdu_get_public_key(uint8_t _U_ instruction) {
     const uint8_t *const dataBuffer = G_io_apdu_buffer + OFFSET_CDATA;
 
     uint8_t verify = READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_P1]);

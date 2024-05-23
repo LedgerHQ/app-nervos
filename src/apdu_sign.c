@@ -127,7 +127,7 @@ static void multi_output_prompts_cb(size_t which) {
 
 #define MAX_NUMBER_CHARS (MAX_INT_DIGITS + 2) // include decimal point and terminating null
 
-static size_t sign_complete(uint8_t instruction) {
+static void sign_complete(uint8_t instruction) {
 
     ui_callback_t const ok_c = instruction == INS_SIGN_WITH_HASH ? sign_with_hash_ok : sign_without_hash_ok;
     void *lock_arg_to_destination_address_cb = G.u.tx.outputs[0].is_multisig ? lock_arg_to_multisig_address : lock_arg_to_sighash_address;
@@ -255,11 +255,8 @@ static size_t sign_complete(uint8_t instruction) {
 
     } break;
     default:
-        goto unsafe;
+        THROW(EXC_REJECT);
     }
-
-unsafe:
-  THROW(EXC_REJECT);
 }
 
 /***********************************************************/
@@ -994,7 +991,7 @@ static size_t handle_apdu(uint8_t const instruction) {
             PRINTF("Initializing parser\n");
             MolReader_AnnotatedTransaction_init_state((struct AnnotatedTransaction_state*) &G.transaction_stack, &annotatedTransaction_callbacks);
             PRINTF("Initialized parser\n");
-            // NO BREAK
+            __attribute__((fallthrough));
         case P1_NEXT:
             if(G.maybe_transaction.hard_reject) THROW(EXC_PARSE_ERROR);
             PRINTF("Calling parser\n");
@@ -1022,17 +1019,22 @@ static size_t handle_apdu(uint8_t const instruction) {
 
     if (last && G.maybe_transaction.is_valid) {
         // We already computed the hash above, so just proceed to sign_complete.
-        return sign_complete(instruction);
+        sign_complete(instruction);
     } else {
         return finalize_successful_send(0);
     }
+    return 0;
 }
 
 _Static_assert(sizeof G.transaction_stack == sizeof(struct AnnotatedTransaction_state), "Size of transaction_stack is not equal to sizeof(struct AnnotatedTransaction_state)");
 _Static_assert(sizeof G.u.tx.witness_stack == sizeof(struct WitnessArgs_state), "Size of witness_stack is not equal to sizeof(struct WitnessArgs_state)");
 
-size_t handle_apdu_sign(uint8_t instruction) {
-    return handle_apdu(instruction);
+void handle_apdu_sign(uint8_t instruction) {
+    size_t ret = handle_apdu(instruction);
+
+    if (ret > 0) {
+        delayed_send(ret);
+    }
 }
 
 static int perform_signature(bool const on_hash, bool const send_hash) {
@@ -1122,7 +1124,7 @@ static void replace_undisplayable(uint8_t *buff, uint8_t *buff_size) {
   const uint8_t four_bytes = 240; // 1111 0000
   const uint8_t three_bytes = 224; // 1110 0000
   const uint8_t two_bytes = 192;  // 1100 0000
-  uint8_t tmp_buff [*buff_size];
+  uint8_t tmp_buff [0xff]; // 0xff, the largest *buff_size could be
   memcpy(tmp_buff, buff, *buff_size);
   memset(buff, 0, *buff_size);
   const uint8_t tmp_size = *buff_size;
@@ -1160,7 +1162,7 @@ static void handle_long_message(uint8_t *buff, uint8_t *buff_size) {
 
 /* Sign message                                                        */
 /***********************************************************************/
-static size_t handle_apdu_sign_message_impl(uint8_t const __attribute__((unused)) _instruction) {
+static void handle_apdu_sign_message_impl(uint8_t const __attribute__((unused)) _instruction) {
   uint8_t *const buff = &G_io_apdu_buffer[OFFSET_CDATA];
   uint8_t const buff_size = READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_LC]);
   uint8_t const p1 = READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_P1]);
@@ -1174,7 +1176,7 @@ static size_t handle_apdu_sign_message_impl(uint8_t const __attribute__((unused)
       if(buff_size <= 1) THROW(EXC_REJECT);
       g_sign_msg->display_as_hex = READ_UNALIGNED_BIG_ENDIAN(bool, buff);
       read_bip32_path(&g_sign_msg->key, buff+1, buff_size-1);
-      return finalize_successful_send(0);
+      return delay_successful(0);
     case P1_NEXT:
       // Guard against overflow
       if (g_sign_msg->packet_index >= 0xFF) PARSE_ERROR();
@@ -1188,7 +1190,7 @@ static size_t handle_apdu_sign_message_impl(uint8_t const __attribute__((unused)
     // Ensure the message begins with "Nervos Message:"
     if(!check_magic_bytes(buff, buff_size)) THROW(EXC_PARSE_ERROR);
 
-    uint8_t tmp_msg_buff[buff_size];
+    uint8_t tmp_msg_buff[0xff]; // 0xff, the largest buff_size could be
     uint8_t tmp_msg_buff_size = buff_size;
 
     // Move msg, so we dont hash the same data that we mutate
@@ -1228,12 +1230,12 @@ static size_t handle_apdu_sign_message_impl(uint8_t const __attribute__((unused)
     ui_prompt(message_prompts, ok_sign, sign_reject);
   }
   else {
-      return finalize_successful_send(0);
+      return delay_successful(0);
   }
 }
 
-size_t handle_apdu_sign_message(uint8_t instruction) {
-  return handle_apdu_sign_message_impl(instruction);
+void handle_apdu_sign_message(uint8_t instruction) {
+  handle_apdu_sign_message_impl(instruction);
 }
 
 /***********************************************************************/
@@ -1256,7 +1258,7 @@ static bool sign_message_hash_ok(void) {
   return true;
 }
 
-static size_t handle_apdu_sign_message_hash_impl(void) {
+static void handle_apdu_sign_message_hash_impl(void) {
   uint8_t *const buff = &G_io_apdu_buffer[OFFSET_CDATA];
   uint8_t const buff_size = READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_LC]);
   uint8_t const p1 = READ_UNALIGNED_BIG_ENDIAN(uint8_t, &G_io_apdu_buffer[OFFSET_P1]);
@@ -1268,7 +1270,7 @@ static size_t handle_apdu_sign_message_hash_impl(void) {
     case P1_FIRST:
       clear_message_hash_data();
       read_bip32_path(&g_smh->key, buff, buff_size);
-      return finalize_successful_send(0);
+      return delay_successful(0);
     case P1_LAST_MARKER:
       // If the hash is > than 32 bytes, we can't display it (64 chars is the limit, and each byte gets displayed as 2 chars)
       if(buff_size > 32) PARSE_ERROR();
@@ -1290,10 +1292,10 @@ static size_t handle_apdu_sign_message_hash_impl(void) {
   ui_prompt(message_prompts, ok_sign, sign_reject);
 }
 
-size_t handle_apdu_sign_message_hash(uint8_t instruction) {
+void handle_apdu_sign_message_hash(uint8_t instruction) {
   (void)instruction; // intentionally unused
   if(N_data.sign_hash_type == SIGN_HASH_ON)
-    return handle_apdu_sign_message_hash_impl();
+    handle_apdu_sign_message_hash_impl();
   else
     THROW(EXC_REJECT);
 }
