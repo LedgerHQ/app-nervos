@@ -92,7 +92,7 @@ void ui_initial_screen(void) {
     settingContents.nbContents = 1;
 
     nbgl_useCaseHomeAndSettings(APPNAME,
-                                &C_stax_nervos_64px,
+                                &C_app_nervos_64px,
                                 NULL,
                                 INIT_HOME_PAGE,
                                 &settingContents,
@@ -145,7 +145,7 @@ void ui_prompt_with_cb(void (*switch_screen_cb)(size_t),
 
     nbgl_useCaseReview(TYPE_TRANSACTION,
                         &pair_list,
-                        &C_stax_nervos_64px,
+                        &C_app_nervos_64px,
                         "Confirm "APPNAME" action",
                         NULL,
                         "Confirm "APPNAME" action",
