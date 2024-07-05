@@ -1,4 +1,4 @@
-var base_time = 8000;
+var base_time = 30000;
 if (process.env.LEDGER_LIVE_HARDWARE) {
   base_time = 0;
 }
