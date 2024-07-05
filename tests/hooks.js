@@ -39,14 +39,19 @@ exports.mochaHooks = {
       console.log(this.speculos);
     } else {
       const speculosProcessOptions = process.env.SPECULOS_DEBUG ? {stdio:"inherit"} : {};
-      this.speculosProcess = spawn('speculos', [
-        process.env.LEDGER_APP,
-        '--sdk', '2.0', // TODO keep in sync
-        '--display', 'headless',
-        '--button-port', '' + BUTTON_PORT,
-        '--automation-port', '' + AUTOMATION_PORT,
-        '--apdu-port', '' + APDU_PORT,
-      ], speculosProcessOptions);
+
+      if(!process.env.USE_CUSTOM_SPECULOS) {
+        this.speculosProcess = spawn('speculos', [
+          process.env.LEDGER_APP,
+          '--sdk', '2.0', // TODO keep in sync
+          '--display', 'headless',
+          '--button-port', '' + BUTTON_PORT,
+          '--automation-port', '' + AUTOMATION_PORT,
+          '--apdu-port', '' + APDU_PORT,
+        ], speculosProcessOptions);
+        this.speculosProcess.on('exit', (code) => process.exit(code))
+      }
+
       console.log("Speculos started");
       while (this.speculos === undefined) { // Let the test timeout handle the bad case
         try {
