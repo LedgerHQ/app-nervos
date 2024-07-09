@@ -17,15 +17,15 @@ function pressButtonAndWaitForChange(speculos, btn, timeout = 1000) {
   return new Promise(async resolve => {
 
     const subscription = speculos.automationEvents.subscribe(() => {
-      resolve();
+      subscription.unsubscribe()
+      sleep(200).then(() => resolve(true))
     })
 
     setTimeout(() => {
       subscription.unsubscribe();
-      resolve();
+      resolve(false);
     }, timeout)
     speculos.button(btn)
-    await sleep(200)
   });
 
 }
@@ -40,7 +40,11 @@ exports.mochaHooks = {
     } else {
       const speculosProcessOptions = process.env.SPECULOS_DEBUG ? {stdio:"inherit"} : {};
 
-      if(!process.env.USE_CUSTOM_SPECULOS) {
+      // pass a custom speculos pid to use the custom
+      const customSpeculosPid = process.env.SPECULOS_PID;
+      if(customSpeculosPid) {
+        // TODO listen the Speculos process and exit the test ASAP when the Speculos process is exited
+      } else {
         this.speculosProcess = spawn('speculos', [
           process.env.LEDGER_APP,
           '--sdk', '2.0', // TODO keep in sync
@@ -144,7 +148,7 @@ async function automationStart(speculos, interactionFunc) {
   let promptLockResolve;
   let promptsLock=new Promise(r=>{promptLockResolve=r});
   if(speculos.promptsEndPromise) {
-    await Promise.race([speculos.promptsEndPromise, sleep(500)])
+    await Promise.race([speculos.promptsEndPromise, sleep(2000)])
   }
   speculos.promptsEndPromise = promptsLock; // Set ourselves as the interaction.
 
@@ -161,14 +165,6 @@ async function automationStart(speculos, interactionFunc) {
       return await sendPromise;
     }
   };
-
-  // Sync up with the ledger; wait until we're on the home screen, and do some
-  // clicking back and forth to make sure we see the event.
-  // Then pass screens to interactionFunc.
-  let readyPromise = syncWithLedger(speculos, asyncEventIter, interactionFunc);
-
-  // Resolve our lock when we're done
-  readyPromise.then(r=>r.promptsPromise.then(()=>{promptLockResolve(true)}));
 
   let header;
   let body;
@@ -196,16 +192,33 @@ async function automationStart(speculos, interactionFunc) {
   // machine starts.
   await pressButtonAndWaitForChange(speculos, "Rr");
 
-  return readyPromise.then(r=>{r.cancel = ()=>{subscript.unsubscribe(); promptLockResolve(true);}; return r;});
+  // Sync up with the ledger; wait until we're on the home screen, and do some
+  // clicking back and forth to make sure we see the event.
+  // Then pass screens to interactionFunc.
+  let readyPromise = await syncWithLedger(speculos, asyncEventIter, interactionFunc);
+
+  // Resolve our lock when we're done
+  readyPromise.promptsPromise.then(() => promptLockResolve(true))
+  readyPromise.cancel = () => {
+    subscript.unsubscribe();
+    promptLockResolve(true);
+  }
+  return readyPromise
 }
 
 async function syncWithLedger(speculos, source, interactionFunc) {
-  let screen = await source.next();
+  let screen = await Promise.race([
+    source.next(),
+    sleep(2000).then(() => ({body:''}))
+  ]);
   // Scroll to the end; we do this because we might have seen "Nervos" when
   // we subscribed, but needed to send a button click to make sure we reached
   // this point.
   while(screen.body != "Quit") {
-    await pressButtonAndWaitForChange(speculos, "Rr")
+    const changed = await pressButtonAndWaitForChange(speculos, "Rr")
+    // the Quit is the last screen and will not change after press the Rr button
+    // if we find that the screen is not changed, we should try to press the Ll button and check if it is changed
+    if (!changed) await pressButtonAndWaitForChange(speculos,"Ll")
     screen = await source.next();
   }
   // Scroll back to "Nervos", and we're ready and pretty sure we're on the
@@ -246,6 +259,7 @@ async function readMultiScreenPrompt(speculos, source) {
 
 function acceptPrompts(expectedPrompts, selectPrompt) {
   return async (speculos, screens) => {
+    if(!expectedPrompts.length) return
     if(!screens) {
       // We're running against hardware, so we can't prompt but
       // should tell the person running the test what to do.
