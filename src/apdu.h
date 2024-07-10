@@ -12,10 +12,6 @@
 
 #include "apdu_pubkey.h"
 
-#if CX_APILEVEL < 8
-#error "May only compile with API level 8 or higher; requires newer firmware"
-#endif
-
 #define OFFSET_CLA   0
 #define OFFSET_INS   1 // instruction code
 #define OFFSET_P1    2 // user-defined 1-byte parameter
