@@ -163,6 +163,7 @@ typedef union {
     struct {
         uint8_t address_format_type;
         uint8_t code_hash[32];
+        uint8_t hash_type;
         lock_arg_t lock_arg;
     } code_hash_data_or_type; // code_hash_data or code_hash_type
 } render_address_payload_t;
