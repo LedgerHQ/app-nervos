@@ -53,7 +53,12 @@ key_pair_t *generate_extended_key_pair_return_global(bip32_path_t const *const b
 
     cx_curve_t const cx_curve = CX_CURVE_SECP256K1;
 
-    os_perso_derive_node_bip32(cx_curve, bip32_path->components, bip32_path->length, priv->private_key_data, chain_code);
+    unsigned char temp_privkey[64] = {0};
+    CX_THROW(os_derive_bip32_no_throw(cx_curve, bip32_path->components, bip32_path->length, temp_privkey, chain_code));
+    memcpy(priv->private_key_data, temp_privkey, 32);
+    // clear the temporary buffer
+    explicit_bzero(temp_privkey, sizeof(temp_privkey));
+//     os_perso_derive_node_bip32(cx_curve, bip32_path->components, bip32_path->length, priv->private_key_data, chain_code);
 
     BEGIN_TRY {
         TRY {
