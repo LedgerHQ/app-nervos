@@ -64,7 +64,7 @@ key_pair_t *generate_extended_key_pair_return_global(bip32_path_t const *const b
         TRY {
             CX_THROW(cx_ecfp_init_private_key_no_throw(cx_curve, priv->private_key_data, sizeof(priv->private_key_data),
                                      &priv->res.private_key));
-            cx_ecfp_generate_pair(cx_curve, &priv->res.public_key, &priv->res.private_key, 1);
+            CX_THROW(cx_ecfp_generate_pair_no_throw(cx_curve, &priv->res.public_key, &priv->res.private_key, 1));
 
             if (cx_curve == CX_CURVE_Ed25519) {
                 cx_edwards_compress_point_no_throw(CX_CURVE_Ed25519, priv->res.public_key.W, priv->res.public_key.W_len);
