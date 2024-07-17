@@ -102,10 +102,11 @@ size_t sign(uint8_t *const out, size_t const out_size, key_pair_t const *const p
     explicit_bzero(sig, sizeof(sig));
 
     unsigned int info = 0;
+    size_t sig_len = sizeof(sig);
 
-    cx_ecdsa_sign(&pair->private_key, CX_LAST | CX_RND_RFC6979,
+    CX_THROW(cx_ecdsa_sign_no_throw(&pair->private_key, CX_LAST | CX_RND_RFC6979,
                   CX_SHA256, // historical reasons...semantically CX_NONE
-                  (uint8_t const *const)PIC(in), in_size, sig, sizeof(sig), &info);
+                  (uint8_t const *const)PIC(in), in_size, sig, &sig_len, &info));
 
     // Converting to compressed format
     int const r_size = sig[3];
