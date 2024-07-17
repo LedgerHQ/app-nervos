@@ -62,7 +62,7 @@ void handle_apdu_get_wallet_id(uint8_t __attribute__((unused)) instruction) {
 
     int rv = 0;
     cx_blake2b_t hashState;
-    cx_blake2b_init(&hashState, 512);
+    CX_THROW(cx_blake2b_init_no_throw(&hashState, 512));
 
     WITH_KEY_PAIR(id_path, key_pair, size_t, ({
                       PRINTF("\nPublic Key: %.*h\n", key_pair->public_key.W_len, key_pair->public_key.W);
