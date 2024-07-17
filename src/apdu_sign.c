@@ -39,7 +39,7 @@ static void blake2b_incremental_hash(
     check_null(state);
 
     conditional_init_hash_state(state);
-    cx_hash((cx_hash_t *)&state->state, 0, out, out_size, NULL, 0);
+    CX_THROW(cx_hash_no_throw((cx_hash_t *)&state->state, 0, out, out_size, NULL, 0));
 }
 
 static void blake2b_finish_hash(
@@ -49,7 +49,7 @@ static void blake2b_finish_hash(
     check_null(state);
 
     conditional_init_hash_state(state);
-    cx_hash((cx_hash_t *)&state->state, CX_LAST, NULL, 0, out, out_size);
+    CX_THROW(cx_hash_no_throw((cx_hash_t *)&state->state, CX_LAST, NULL, 0, out, out_size));
 }
 
 static int perform_signature(bool const on_hash, bool const send_hash);
