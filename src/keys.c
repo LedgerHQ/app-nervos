@@ -132,8 +132,8 @@ void generate_lock_arg_for_pubkey(const cx_ecfp_public_key_t *const key, standar
 
     cx_blake2b_t hash_state;
 
-    cx_blake2b_init2(&hash_state, 32*8, NULL, 0, (uint8_t *)blake2b_personalization,
-                     sizeof(blake2b_personalization) - 1);
+    CX_THROW(cx_blake2b_init2_no_throw(&hash_state, 32*8, NULL, 0, (uint8_t *)blake2b_personalization,
+                     sizeof(blake2b_personalization) - 1));
 
     cx_hash((cx_hash_t *)&hash_state, 0, (uint8_t *const) & tag_byte, 1, NULL, 0);
     cx_hash((cx_hash_t *)&hash_state, 0, (uint8_t *const) key->W+1, 32, NULL, 0);

@@ -26,8 +26,8 @@
 static inline void conditional_init_hash_state(blake2b_hash_state_t *const state) {
     check_null(state);
     if (!state->initialized) {
-        cx_blake2b_init2(&state->state, SIGN_HASH_SIZE * 8, NULL, 0, (uint8_t *)blake2b_personalization,
-                         sizeof(blake2b_personalization) - 1);
+        CX_THROW(cx_blake2b_init2_no_throw(&state->state, SIGN_HASH_SIZE * 8, NULL, 0, (uint8_t *)blake2b_personalization,
+                         sizeof(blake2b_personalization) - 1));
         state->initialized = true;
     }
 }
