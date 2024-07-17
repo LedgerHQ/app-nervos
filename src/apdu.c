@@ -75,7 +75,7 @@ void handle_apdu_get_wallet_id(uint8_t __attribute__((unused)) instruction) {
                       // G_io_apdu_buffer, sizeof(G_io_apdu_buffer));
                       CX_THROW(cx_hash_no_throw((cx_hash_t *)&hashState, CX_LAST, (uint8_t *)key_pair->public_key.W,
                                    key_pair->public_key.W_len, G_io_apdu_buffer, sizeof(G_io_apdu_buffer)));
-                      rv = cx_hash_get_size(hashState);
+                      rv = cx_hash_get_size((cx_hash_t *)&hashState);
                   }));
     delay_successful(rv);
 }
