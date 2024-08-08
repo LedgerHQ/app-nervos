@@ -18,7 +18,7 @@ function pressButtonAndWaitForChange(speculos, btn, timeout = 1000) {
 
     const subscription = speculos.automationEvents.subscribe(() => {
       subscription.unsubscribe()
-      sleep(200).then(() => resolve(true))
+      sleep(100).then(() => resolve(true))
     })
 
     setTimeout(() => {
@@ -148,7 +148,7 @@ async function automationStart(speculos, interactionFunc) {
   let promptLockResolve;
   let promptsLock=new Promise(r=>{promptLockResolve=r});
   if(speculos.promptsEndPromise) {
-    await Promise.race([speculos.promptsEndPromise, sleep(2000)])
+    await Promise.race([speculos.promptsEndPromise, sleep(500)])
   }
   speculos.promptsEndPromise = promptsLock; // Set ourselves as the interaction.
 
@@ -209,7 +209,7 @@ async function automationStart(speculos, interactionFunc) {
 async function syncWithLedger(speculos, source, interactionFunc) {
   let screen = await Promise.race([
     source.next(),
-    sleep(2000).then(() => ({body:''}))
+    sleep(1000).then(() => ({body:''}))
   ]);
   // Scroll to the end; we do this because we might have seen "Nervos" when
   // we subscribed, but needed to send a button click to make sure we reached

@@ -26,8 +26,8 @@
 static inline void conditional_init_hash_state(blake2b_hash_state_t *const state) {
     check_null(state);
     if (!state->initialized) {
-        cx_blake2b_init2(&state->state, SIGN_HASH_SIZE * 8, NULL, 0, (uint8_t *)blake2b_personalization,
-                         sizeof(blake2b_personalization) - 1);
+        CX_ASSERT(cx_blake2b_init2_no_throw(&state->state, SIGN_HASH_SIZE * 8, NULL, 0, (uint8_t *)blake2b_personalization,
+                         sizeof(blake2b_personalization) - 1));
         state->initialized = true;
     }
 }
@@ -39,7 +39,7 @@ static void blake2b_incremental_hash(
     check_null(state);
 
     conditional_init_hash_state(state);
-    cx_hash((cx_hash_t *)&state->state, 0, out, out_size, NULL, 0);
+    CX_ASSERT(cx_hash_no_throw((cx_hash_t *)&state->state, 0, out, out_size, NULL, 0));
 }
 
 static void blake2b_finish_hash(
@@ -49,7 +49,7 @@ static void blake2b_finish_hash(
     check_null(state);
 
     conditional_init_hash_state(state);
-    cx_hash((cx_hash_t *)&state->state, CX_LAST, NULL, 0, out, out_size);
+    CX_ASSERT(cx_hash_no_throw((cx_hash_t *)&state->state, CX_LAST, NULL, 0, out, out_size));
 }
 
 static int perform_signature(bool const on_hash, bool const send_hash);
