@@ -54,7 +54,7 @@ key_pair_t *generate_extended_key_pair_return_global(bip32_path_t const *const b
     cx_curve_t const cx_curve = CX_CURVE_SECP256K1;
 
     unsigned char temp_privkey[64] = {0};
-    CX_THROW(os_derive_bip32_no_throw(cx_curve, bip32_path->components, bip32_path->length, temp_privkey, chain_code));
+    CX_ASSERT(os_derive_bip32_no_throw(cx_curve, bip32_path->components, bip32_path->length, temp_privkey, chain_code));
     memcpy(priv->private_key_data, temp_privkey, 32);
     // clear the temporary buffer
     explicit_bzero(temp_privkey, sizeof(temp_privkey));
@@ -62,12 +62,12 @@ key_pair_t *generate_extended_key_pair_return_global(bip32_path_t const *const b
 
     BEGIN_TRY {
         TRY {
-            CX_THROW(cx_ecfp_init_private_key_no_throw(cx_curve, priv->private_key_data, sizeof(priv->private_key_data),
+            CX_ASSERT(cx_ecfp_init_private_key_no_throw(cx_curve, priv->private_key_data, sizeof(priv->private_key_data),
                                      &priv->res.private_key));
-            CX_THROW(cx_ecfp_generate_pair_no_throw(cx_curve, &priv->res.public_key, &priv->res.private_key, 1));
+            CX_ASSERT(cx_ecfp_generate_pair_no_throw(cx_curve, &priv->res.public_key, &priv->res.private_key, 1));
 
             if (cx_curve == CX_CURVE_Ed25519) {
-                CX_THROW(cx_edwards_compress_point_no_throw(CX_CURVE_Ed25519, priv->res.public_key.W, priv->res.public_key.W_len));
+                CX_ASSERT(cx_edwards_compress_point_no_throw(CX_CURVE_Ed25519, priv->res.public_key.W, priv->res.public_key.W_len));
                 priv->res.public_key.W_len = 33;
             }
         }
@@ -104,7 +104,7 @@ size_t sign(uint8_t *const out, size_t const out_size, key_pair_t const *const p
     unsigned int info = 0;
     size_t sig_len = sizeof(sig);
 
-    CX_THROW(cx_ecdsa_sign_no_throw(&pair->private_key, CX_LAST | CX_RND_RFC6979,
+    CX_ASSERT(cx_ecdsa_sign_no_throw(&pair->private_key, CX_LAST | CX_RND_RFC6979,
                   CX_SHA256, // historical reasons...semantically CX_NONE
                   (uint8_t const *const)PIC(in), in_size, sig, &sig_len, &info));
 
@@ -138,12 +138,12 @@ void generate_lock_arg_for_pubkey(const cx_ecfp_public_key_t *const key, standar
 
     cx_blake2b_t hash_state;
 
-    CX_THROW(cx_blake2b_init2_no_throw(&hash_state, 32*8, NULL, 0, (uint8_t *)blake2b_personalization,
+    CX_ASSERT(cx_blake2b_init2_no_throw(&hash_state, 32*8, NULL, 0, (uint8_t *)blake2b_personalization,
                      sizeof(blake2b_personalization) - 1));
 
-    CX_THROW(cx_hash_no_throw((cx_hash_t *)&hash_state, 0, (uint8_t *const) & tag_byte, 1, NULL, 0));
-    CX_THROW(cx_hash_no_throw((cx_hash_t *)&hash_state, 0, (uint8_t *const) key->W+1, 32, NULL, 0));
-    CX_THROW(cx_hash_no_throw((cx_hash_t *)&hash_state, CX_LAST, NULL, 0, (uint8_t *const) temp_hash,
+    CX_ASSERT(cx_hash_no_throw((cx_hash_t *)&hash_state, 0, (uint8_t *const) & tag_byte, 1, NULL, 0));
+    CX_ASSERT(cx_hash_no_throw((cx_hash_t *)&hash_state, 0, (uint8_t *const) key->W+1, 32, NULL, 0));
+    CX_ASSERT(cx_hash_no_throw((cx_hash_t *)&hash_state, CX_LAST, NULL, 0, (uint8_t *const) temp_hash,
             sizeof(temp_hash)));
 
     memcpy(dest, temp_hash, sizeof(standard_lock_arg_t));
