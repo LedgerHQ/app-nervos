@@ -62,7 +62,7 @@ void handle_apdu_get_wallet_id(uint8_t __attribute__((unused)) instruction) {
 
     int rv = 0;
     cx_blake2b_t hashState;
-    cx_blake2b_init(&hashState, 512);
+    CX_ASSERT(cx_blake2b_init_no_throw(&hashState, 512));
 
     WITH_KEY_PAIR(id_path, key_pair, size_t, ({
                       PRINTF("\nPublic Key: %.*h\n", key_pair->public_key.W_len, key_pair->public_key.W);
@@ -73,8 +73,9 @@ void handle_apdu_get_wallet_id(uint8_t __attribute__((unused)) instruction) {
                       // Stubbed until we have the sign step working.
                       // rv = cx_hash((cx_hash_t*) &hashState, CX_LAST, signedToken, sizeof(signedToken),
                       // G_io_apdu_buffer, sizeof(G_io_apdu_buffer));
-                      rv = cx_hash((cx_hash_t *)&hashState, CX_LAST, (uint8_t *)key_pair->public_key.W,
-                                   key_pair->public_key.W_len, G_io_apdu_buffer, sizeof(G_io_apdu_buffer));
+                      CX_ASSERT(cx_hash_no_throw((cx_hash_t *)&hashState, CX_LAST, (uint8_t *)key_pair->public_key.W,
+                                   key_pair->public_key.W_len, G_io_apdu_buffer, sizeof(G_io_apdu_buffer)));
+                      rv = cx_hash_get_size((cx_hash_t *)&hashState);
                   }));
     delay_successful(rv);
 }

@@ -11,8 +11,8 @@ GIT_DESCRIBE ?= $(shell git describe --tags --abbrev=8 --always --long --dirty 2
 
 VERSION_TAG ?= $(shell echo "$(GIT_DESCRIBE)" | cut -f1 -d-)
 APPVERSION_M=0
-APPVERSION_N=5
-APPVERSION_P=7
+APPVERSION_N=6
+APPVERSION_P=0
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 # Only warn about version tags if specified/inferred
@@ -32,11 +32,13 @@ else
 endif
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
-ICONNAME=icons/nano-s-nervos.gif
+ICONNAME=icons/nanos-nervos.gif
 else ifeq ($(TARGET_NAME), TARGET_STAX)
 ICONNAME=icons/stax_app_nervos.gif
+else ifeq ($(TARGET_NAME), TARGET_FLEX)
+ICONNAME=icons/flex_app_nervos.gif
 else # NANOX & NANOS+
-ICONNAME=icons/nano-x-nervos.gif
+ICONNAME=icons/nanox-nervos.gif
 endif
 
 ################
@@ -63,7 +65,7 @@ DEFINES   += COMMIT=\"$(COMMIT)\" APPVERSION_N=$(APPVERSION_N) APPVERSION_P=$(AP
 # DEFINES   += _Static_assert\(...\)=
 DEFINES   += APPNAME=\"$(APPNAME)\"
 
-ifneq (,$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX))
+ifneq (,$(filter $(TARGET_NAME),TARGET_NANOX TARGET_STAX TARGET_FLEX))
 APP_LOAD_PARAMS += --appFlags 0x240 # with BLE support
 DEFINES   += HAVE_BLE BLE_COMMAND_TIMEOUT_MS=2000
 DEFINES   += HAVE_BLE_APDU # basic ledger apdu transport over BLE
@@ -78,7 +80,7 @@ else
 DEFINES   += IO_SEPROXYHAL_BUFFER_SIZE_B=300
 endif
 
-ifeq ($(TARGET_NAME),TARGET_STAX)
+ifneq (,$(filter $(TARGET_NAME),TARGET_STAX TARGET_FLEX))
 DEFINES   += NBGL_QRCODE
 SDK_SOURCE_PATH += qrcode
 else
@@ -161,7 +163,7 @@ include $(BOLOS_SDK)/Makefile.glyphs
 APP_SOURCE_PATH  += src
 SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl
 
-ifneq ($(TARGET_NAME),TARGET_STAX)
+ifeq (,$(filter $(TARGET_NAME),TARGET_STAX TARGET_FLEX))
 SDK_SOURCE_PATH += lib_ux
 endif
 

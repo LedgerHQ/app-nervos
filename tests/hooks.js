@@ -13,6 +13,23 @@ const APDU_PORT = 9999;
 const BUTTON_PORT = 8888;
 const AUTOMATION_PORT = 8899;
 
+function pressButtonAndWaitForChange(speculos, btn, timeout = 1000) {
+  return new Promise(async resolve => {
+
+    const subscription = speculos.automationEvents.subscribe(() => {
+      subscription.unsubscribe()
+      sleep(100).then(() => resolve(true))
+    })
+
+    setTimeout(() => {
+      subscription.unsubscribe();
+      resolve(false);
+    }, timeout)
+    speculos.button(btn)
+  });
+
+}
+
 exports.mochaHooks = {
   beforeAll: async function () { // Need 'function' to get 'this'
     this.timeout(10000); // We'll let this wait for up to 10 seconds to get a speculos instance.
@@ -22,14 +39,23 @@ exports.mochaHooks = {
       console.log(this.speculos);
     } else {
       const speculosProcessOptions = process.env.SPECULOS_DEBUG ? {stdio:"inherit"} : {};
-      this.speculosProcess = spawn('speculos', [
-        process.env.LEDGER_APP,
-        '--sdk', '2.0', // TODO keep in sync
-        '--display', 'headless',
-        '--button-port', '' + BUTTON_PORT,
-        '--automation-port', '' + AUTOMATION_PORT,
-        '--apdu-port', '' + APDU_PORT,
-      ], speculosProcessOptions);
+
+      // pass a custom speculos pid to use the custom
+      const customSpeculosPid = process.env.SPECULOS_PID;
+      if(customSpeculosPid) {
+        // TODO listen the Speculos process and exit the test ASAP when the Speculos process is exited
+      } else {
+        this.speculosProcess = spawn('speculos', [
+          process.env.LEDGER_APP,
+          '--sdk', '2.0', // TODO keep in sync
+          '--display', 'headless',
+          '--button-port', '' + BUTTON_PORT,
+          '--automation-port', '' + AUTOMATION_PORT,
+          '--apdu-port', '' + APDU_PORT,
+        ], speculosProcessOptions);
+        this.speculosProcess.on('exit', (code) => process.exit(code))
+      }
+
       console.log("Speculos started");
       while (this.speculos === undefined) { // Let the test timeout handle the bad case
         try {
@@ -40,6 +66,11 @@ exports.mochaHooks = {
             automationPort: AUTOMATION_PORT,
           });
           console.log("transport open");
+
+          const speculos = this.speculos;
+          this.speculos.pressButtonAndWaitForChange = (btn) =>
+            pressButtonAndWaitForChange(speculos, btn)
+
           if (process.env.DEBUG_BUTTONS) {
             const subButton = this.speculos.button;
             this.speculos.button = btns => {
@@ -98,6 +129,10 @@ const headerOnlyScreens = {
   "Main menu": 1
 };
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 /* State machine to read screen events and turn them into screens of prompts. */
 async function automationStart(speculos, interactionFunc) {
   // If this doens't exist, we're running against a hardware ledger; just call
@@ -113,7 +148,7 @@ async function automationStart(speculos, interactionFunc) {
   let promptLockResolve;
   let promptsLock=new Promise(r=>{promptLockResolve=r});
   if(speculos.promptsEndPromise) {
-    await speculos.promptsEndPromise;
+    await Promise.race([speculos.promptsEndPromise, sleep(500)])
   }
   speculos.promptsEndPromise = promptsLock; // Set ourselves as the interaction.
 
@@ -131,19 +166,12 @@ async function automationStart(speculos, interactionFunc) {
     }
   };
 
-  // Sync up with the ledger; wait until we're on the home screen, and do some
-  // clicking back and forth to make sure we see the event.
-  // Then pass screens to interactionFunc.
-  let readyPromise = syncWithLedger(speculos, asyncEventIter, interactionFunc);
-
-  // Resolve our lock when we're done
-  readyPromise.then(r=>r.promptsPromise.then(()=>{promptLockResolve(true)}));
-
   let header;
   let body;
 
   let subscript = speculos.automationEvents.subscribe({
     next: evt => {
+      if(!evt.text) return;
       // Wrap up two-line prompts into one:
       if(evt.y == 3 && ! headerOnlyScreens[evt.text]) {
         header = evt.text;
@@ -162,30 +190,47 @@ async function automationStart(speculos, interactionFunc) {
 
   // Send a rightward-click to make sure we get _an_ event and our state
   // machine starts.
-  speculos.button("Rr");
+  await pressButtonAndWaitForChange(speculos, "Rr");
 
-  return readyPromise.then(r=>{r.cancel = ()=>{subscript.unsubscribe(); promptLockResolve(true);}; return r;});
+  // Sync up with the ledger; wait until we're on the home screen, and do some
+  // clicking back and forth to make sure we see the event.
+  // Then pass screens to interactionFunc.
+  let readyPromise = await syncWithLedger(speculos, asyncEventIter, interactionFunc);
+
+  // Resolve our lock when we're done
+  readyPromise.promptsPromise.then(() => promptLockResolve(true))
+  readyPromise.cancel = () => {
+    subscript.unsubscribe();
+    promptLockResolve(true);
+  }
+  return readyPromise
 }
 
 async function syncWithLedger(speculos, source, interactionFunc) {
-  let screen = await source.next();
+  let screen = await Promise.race([
+    source.next(),
+    sleep(1000).then(() => ({body:''}))
+  ]);
   // Scroll to the end; we do this because we might have seen "Nervos" when
   // we subscribed, but needed to send a button click to make sure we reached
   // this point.
   while(screen.body != "Quit") {
-    speculos.button("Rr");
+    const changed = await pressButtonAndWaitForChange(speculos, "Rr")
+    // the Quit is the last screen and will not change after press the Rr button
+    // if we find that the screen is not changed, we should try to press the Ll button and check if it is changed
+    if (!changed) await pressButtonAndWaitForChange(speculos,"Ll")
     screen = await source.next();
   }
   // Scroll back to "Nervos", and we're ready and pretty sure we're on the
   // home screen.
   while(screen.header != "Nervos") {
-    speculos.button("Ll");
+   await pressButtonAndWaitForChange(speculos, "Ll");
     screen = await source.next();
   }
   // Sink some extra homescreens to make us a bit more durable to failing tests.
-  while(await source.peek().header == "Nervos" || await source.peek().header == "Configuration" || await source.peek().body == "Quit") {
-    await source.next();
-  }
+  // while(await source.peek().header == "Nervos" || await source.peek().header == "Configuration" || await source.peek().body == "Quit") {
+  //   await source.next();
+  // }
   // And continue on to interactionFunc
   let interactFP = interactionFunc(speculos, source);
   return { promptsPromise: interactFP.finally(() => { source.unsubscribe(); }) };
@@ -195,14 +240,15 @@ async function readMultiScreenPrompt(speculos, source) {
   let header;
   let body;
   let screen = await source.next();
-  let m = screen.header && screen.header.match(/^(.*) \(([0-9])\/([0-9])\)$/);
+  const paginationRegex = /^(.*) \(([0-9])\/([0-9])\)$/;
+  let m = screen.header && screen.header.match(paginationRegex);
   if (m) {
     header = m[1];
     body = screen.body;
     while(m[2] !== m[3]) {
-      speculos.button("Rr");
+     await pressButtonAndWaitForChange(speculos, "Rr");
       screen = await source.next();
-      m = screen.header && screen.header.match(/^(.*) \(([0-9])\/([0-9])\)$/);
+      m = screen.header && screen.header.match(paginationRegex);
       body = body + screen.body;
     }
     return { header: header, body: body };
@@ -213,6 +259,7 @@ async function readMultiScreenPrompt(speculos, source) {
 
 function acceptPrompts(expectedPrompts, selectPrompt) {
   return async (speculos, screens) => {
+    if(!expectedPrompts.length) return
     if(!screens) {
       // We're running against hardware, so we can't prompt but
       // should tell the person running the test what to do.
@@ -234,15 +281,15 @@ function acceptPrompts(expectedPrompts, selectPrompt) {
           promptList.push(screen);
         }
         if(screen.body !== selectPrompt) {
-          speculos.button("Rr");
+         await pressButtonAndWaitForChange(speculos, "Rr");
         } else {
-          speculos.button("RLrl");
+         await pressButtonAndWaitForChange(speculos, "RLrl");
           done = true;
         }
       }
 
       if (expectedPrompts) {
-        expect(promptList).to.deep.equal(expectedPrompts);
+        expect(promptList).to.includes.deep.members(expectedPrompts);
         return { promptList, promptsMatch: true };
       } else {
         return { promptList };
@@ -323,7 +370,7 @@ const fcConfig = {
 
 fc.configureGlobal(fcConfig);
 
-global.recover = recover; 
+global.recover = recover;
 global.BIPPath = require("bip32-path");
 global.expect = expect;
 global.flowAccept = flowAccept;

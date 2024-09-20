@@ -187,19 +187,19 @@ describe("sUDT operations", () => {
 
   it("Accepts sUDT create account when enabled in settings", async function() {
     let flipContractDataPolicy = async (target) => {return await automationStart(this.speculos, async (speculos, screens) => {
-      speculos.button("Rr");
-      while((await screens.next()).body != "Configuration") speculos.button("Rr");
-      speculos.button("RLrl");
+      await speculos.pressButtonAndWaitForChange("Rr");
+      while((await screens.next()).body != "Configuration") await speculos.pressButtonAndWaitForChange("Rr");
+      await speculos.pressButtonAndWaitForChange("RLrl");
       let policy;
       while((policy = await screens.next()).header != "Allow contract data") {
-        speculos.button("Rr");
+        await speculos.pressButtonAndWaitForChange("Rr");
       }
       while(policy.body != target) {
-        speculos.button("RLrl");
+        await speculos.pressButtonAndWaitForChange("RLrl");
         policy = await screens.next();
       }
-      do { speculos.button("Rr") } while((await screens.next()).body != "Main menu");
-      speculos.button("RLrl");
+      do { await speculos.pressButtonAndWaitForChange("Rr") } while((await screens.next()).body != "Main menu");
+      await speculos.pressButtonAndWaitForChange("RLrl");
 
       return { promptsMatch: true };
     })};

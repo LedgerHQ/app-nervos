@@ -54,7 +54,16 @@ int bech32_encode(char *const output, const size_t out_len, const char *const hr
             chk = bech32_polymod_step(chk) ^ (hrp[i] >> 5);
             ++i;
         }
-        if (i + 7 + data_len > 108)
+        // An CKB address is encoded from a CKB script,
+        // which consists of three fields:
+        // code_hash (32 bytes), hash_type (1 byte), and args (variable).
+        // It is often longer than a Bitcoin address.
+        // Since a bech32 character can represent 5-bits of data,
+        // the original limit of 107 has been changed to 1023
+        // to increase the script limit to approximately 640 bytes (1023 * 5 / 8 ≈ 1023)
+        // allowing support for ultra-long addresses.
+        size_t max_data_len = 1023;
+        if (i + 7 + data_len > max_data_len)
             return 0;
         chk = bech32_polymod_step(chk);
     }

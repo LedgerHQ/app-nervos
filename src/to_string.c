@@ -220,11 +220,12 @@ void lock_arg_to_sighash_address(char *const dest, size_t const buff_size, lock_
     render_address_payload.full_version.hash_type = 1;
 
     memcpy(&render_address_payload.full_version.hash, lock_arg->hash, sizeof(render_address_payload.full_version.hash));
-    render_pkh(dest, buff_size, &render_address_payload);
+    render_pkh(dest, buff_size, &render_address_payload, sizeof(render_address_payload.full_version));
 }
 
 void lock_arg_to_multisig_address(char *const dest, size_t const buff_size, lock_arg_t const *const lock_arg) {
     render_address_payload_t render_address_payload;
+    size_t payload_len = 0;
     bool has_timelock = false;
     for (int i = 0; i < 8; i++) {
         if (lock_arg->lock_period[i] != 0) {
@@ -233,19 +234,23 @@ void lock_arg_to_multisig_address(char *const dest, size_t const buff_size, lock
         }
     }
     if (has_timelock) {
-        render_address_payload.code_hash_data_or_type.address_format_type = ADDRESS_FORMAT_TYPE_CODE_HASH_TYPE;
+        render_address_payload.code_hash_data_or_type.address_format_type = ADDRESS_FORMAT_TYPE_FULL_VERSION;
         memcpy(&render_address_payload.code_hash_data_or_type.code_hash, multisigLockScript,
                sizeof(render_address_payload.code_hash_data_or_type.code_hash));
+        render_address_payload.code_hash_data_or_type.hash_type = 1;
         memcpy(&render_address_payload.code_hash_data_or_type.lock_arg, lock_arg, sizeof(render_address_payload.code_hash_data_or_type.lock_arg));
+        payload_len = sizeof(render_address_payload.code_hash_data_or_type);
     } else {
         render_address_payload.full_version.address_format_type = ADDRESS_FORMAT_TYPE_FULL_VERSION;
         memcpy(&render_address_payload.full_version.code_hash, multisigLockScript,
                sizeof(render_address_payload.full_version.code_hash));
+        render_address_payload.full_version.hash_type = 1;
         memcpy(&render_address_payload.full_version.hash, lock_arg->hash,
                sizeof(render_address_payload.full_version.hash));
+        payload_len = sizeof(render_address_payload.full_version);
     }
 
-    render_pkh(dest, buff_size, &render_address_payload);
+    render_pkh(dest, buff_size, &render_address_payload, payload_len);
 }
 
 // (x, h) -> "x of y"

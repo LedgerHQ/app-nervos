@@ -53,19 +53,9 @@ static void bip32_path_to_string(char *const out, size_t const out_size, apdu_pu
 }
 
 void render_pkh(char *const out, size_t const out_size,
-                render_address_payload_t const *const payload) {
+                render_address_payload_t const *const payload, size_t payload_len) {
     uint8_t base32_buf[256];
     size_t base32_len = 0;
-    size_t payload_len = 0;
-    bool is_bech32m = 0;
-    if (payload->full_version.address_format_type == ADDRESS_FORMAT_TYPE_FULL_VERSION) {
-        payload_len = sizeof(payload->full_version);
-        is_bech32m = 1;
-    } else if (payload->short_version.address_format_type == ADDRESS_FORMAT_TYPE_SHORT) {
-        payload_len = sizeof(payload->short_version);
-    } else {
-        payload_len = sizeof(payload->code_hash_data_or_type);
-    }
 
     if (!convert_bits(base32_buf, sizeof(base32_buf), &base32_len,
                       5,
@@ -75,6 +65,9 @@ void render_pkh(char *const out, size_t const out_size,
         THROW(EXC_MEMORY_ERROR);
     }
     static const char hrbs[][4] = {"ckb", "ckt"};
+    // https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0021-ckb-address-format/0021-ckb-address-format.md#full-payload-format
+    // CKB addresses are all encoded with bech32m. The bech32 encoding method is deprecated from CKB2021.
+    bool is_bech32m = true;
     if (!bech32_encode(out, out_size, hrbs[N_data.address_type&ADDRESS_TYPE_MASK], base32_buf, base32_len, is_bech32m)) {
         THROW(EXC_MEMORY_ERROR);
     }
