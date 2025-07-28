@@ -49,6 +49,7 @@ __attribute__((section(".boot"))) int main(void) {
                 continue;
             }
             CATCH_OTHER(e) {
+                UNUSED(e);
                 break;
             }
             FINALLY {}
