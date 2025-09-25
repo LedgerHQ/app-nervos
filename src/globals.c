@@ -41,11 +41,7 @@ void init_globals(void) {
 
 // DO NOT TRY TO INIT THIS. This can only be written via an system call.
 // The "N_" is *significant*. It tells the linker to put this in NVRAM.
-#if defined(TARGET_NANOS)
-nvram_data N_data_real;
-#else
 nvram_data const N_data_real;
-#endif
 
 void switch_network() {
     nvram_data data;
@@ -81,7 +77,3 @@ void switch_contract_data() {
       strcpy(data.contract_data_prompt, "On");
     nvm_write((void*)&N_data, (void*)&data, sizeof(N_data));
 }
-
-#if defined(TARGET_NANOS)
-_Static_assert(sizeof global <= 2120, "Size of globals_t exceeds the tested working limit");
-#endif

@@ -207,13 +207,8 @@ static inline void throw_stack_size() {
 void calculate_baking_idle_screens_data(void);
 void update_baking_idle_screens(void);
 
-#if defined(TARGET_NANOS)
-    extern nvram_data N_data_real;
-#   define N_data (*(nvram_data*)PIC(&N_data_real))
-#else
-    extern nvram_data const N_data_real;
-#   define N_data (*(volatile nvram_data *)PIC(&N_data_real))
-#endif
+extern nvram_data const N_data_real;
+#define N_data (*(volatile nvram_data *)PIC(&N_data_real))
 
 
 // Properly updates NVRAM data to prevent any clobbering of data.
