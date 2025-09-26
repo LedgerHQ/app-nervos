@@ -53,4 +53,4 @@ jobs:
     - name: Running tests
       run: ./tests/node_modules/.bin/mocha tests/ --exit --require tests/hooks.js --config tests/.mocharc.js "$@"
       env:
-        LEDGER_APP: bin/nanos/bin/app.elf
+        LEDGER_APP: bin/nanos2/bin/app.elf
