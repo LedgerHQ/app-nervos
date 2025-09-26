@@ -23,8 +23,16 @@ APP_SOURCE_PATH += src
 # https://developers.ledger.com/docs/embedded-app/design-requirements/#device-icon
 ICON_NANOX = icons/nanox-nervos.gif
 ICON_NANOSP = $(ICON_NANOX)
-ICON_STAX = icons/stax_app_nervos.gif
-ICON_FLEX = icons/flex_app_nervos.gif
+ICON_STAX = icons/stax_app_nervos.png
+ICON_FLEX = icons/flex_app_nervos.png
+ICON_APEX_P = icons/apex_app_nervos.png
+
+ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_STAX TARGET_FLEX))
+    ICON_HOME = C_nervos_64px
+else ifeq ($(TARGET_NAME),TARGET_APEX_P)
+    ICON_HOME = C_nervos_48px
+endif
+DEFINES += ICON_HOME=$(ICON_HOME)
 
 # Application allowed derivation curves.
 # Possibles curves are: secp256k1, secp256r1, ed25519 and bls12381g1
