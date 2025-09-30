@@ -1104,7 +1104,7 @@ static void copy_buffer(char *const out, size_t const out_size, buffer_t const *
 
   // if we dont do this then we have stuff from the old buffer getting displayed
   memset(out, 0, out_size);
-  memcpy(out, in->bytes, in->size);
+  memcpy(out, in->ptr, in->size);
 }
 
 static void slice_magic_bytes(char *buff, uint8_t *buff_size) {
@@ -1208,9 +1208,9 @@ static void handle_apdu_sign_message_impl(uint8_t const __attribute__((unused)) 
     memcpy(&g_sign_msg->display, tmp_msg_buff, tmp_msg_buff_size);
 
     //Convert to buffer
-    g_sign_msg->display_as_buffer.bytes = g_sign_msg->display;
+    g_sign_msg->display_as_buffer.ptr = g_sign_msg->display;
     g_sign_msg->display_as_buffer.size = tmp_msg_buff_size;
-    g_sign_msg->display_as_buffer.length = tmp_msg_buff_size;
+    g_sign_msg->display_as_buffer.offset = 0;
   }
   blake2b_incremental_hash(buff, buff_size, &g_sign_msg->hash_state);
   if(last) {
@@ -1280,9 +1280,9 @@ static void handle_apdu_sign_message_hash_impl(void) {
     default:
         THROW(EXC_WRONG_PARAM);
   }
-  g_smh->display_as_buffer.bytes = g_smh->hash_to_sign;
+  g_smh->display_as_buffer.ptr = g_smh->hash_to_sign;
   g_smh->display_as_buffer.size = g_smh->hash_to_sign_size;
-  g_smh->display_as_buffer.length = g_smh->hash_to_sign_size;
+  g_smh->display_as_buffer.offset = 0;
 
   static const char *const message_prompts[] = { PROMPT("Sign"), PROMPT("Message Hash: "), NULL};
   REGISTER_STATIC_UI_VALUE(0, "Message Hash");

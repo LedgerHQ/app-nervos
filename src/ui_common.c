@@ -96,19 +96,3 @@ void register_ui_callback(uint32_t which, string_generation_callback cb, const v
     global.ui.prompt.callbacks[which] = cb;
     global.ui.prompt.callback_data[which] = data;
 }
-
-void exit_app(void) {
-    BEGIN_TRY_L(exit) {
-        TRY_L(exit) {
-#ifdef REVAMPED_IO
-            // handle properly the USB stop/start
-            os_io_stop();
-#endif /* #ifdef REVAMPED_IO */
-            os_sched_exit(-1);
-        }
-        FINALLY_L(exit) {}
-    }
-    END_TRY_L(exit);
-
-    THROW(0); // Suppress warning
-}

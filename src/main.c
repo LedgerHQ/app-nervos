@@ -28,5 +28,7 @@ void app_main(void) {
 	    };
 	    nvm_write((void*)&N_data, (void*)&data, sizeof(N_data));
     }
+    ui_init();
+    ui_initial_screen();
     main_loop(global.handlers, sizeof(global.handlers));
 }

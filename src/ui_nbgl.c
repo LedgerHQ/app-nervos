@@ -4,7 +4,7 @@
 #include "ui.h"
 #include "glyphs.h"
 #include "globals.h"
-
+#include "main_std_app.h"
 
 enum {
     TESTNET_ADDR_TOKEN = FIRST_USER_TOKEN,
@@ -18,7 +18,7 @@ static const char* const infoTypes[] = {
 };
 
 static const char* const infoContents[] = {
-    VERSION
+    APPVERSION
 };
 
 #define SETTINGS_NB_SWITCHES 3
@@ -98,7 +98,7 @@ void ui_initial_screen(void) {
                                 &settingContents,
                                 &infosList,
                                 NULL,
-                                exit_app);
+                                app_exit);
 }
 
 static nbgl_layoutTagValue_t pair;

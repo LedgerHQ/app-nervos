@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "bolos_target.h"
+#include "buffer.h"
 
 // Zeros out all globals that can keep track of APDU instruction state.
 // Notably this does *not* include UI state.
@@ -194,8 +195,6 @@ extern const uint8_t multisigLockScript[];
 extern const uint8_t blake2b_personalization[17];
 
 extern unsigned int volatile app_stack_canary; // From SDK
-
-extern unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 static inline void throw_stack_size() {
     uint8_t st;

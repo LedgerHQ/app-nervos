@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "buffer.h"
 #include "keys.h"
 // #include "operations.h"
 #include "os_cx.h"
