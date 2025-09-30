@@ -13,7 +13,7 @@ APPNAME = "Nervos"
 # Application version
 APPVERSION_M = 0
 APPVERSION_N = 6
-APPVERSION_P = 1
+APPVERSION_P = 2
 APPVERSION = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 # Application source files
