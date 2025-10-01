@@ -22,12 +22,6 @@ typedef void (*apdu_handler)(uint8_t instruction);
 #define MAX_INT_DIGITS 20
 
 typedef struct {
-    size_t length;
-    size_t size;
-    uint8_t *bytes;
-} buffer_t;
-
-typedef struct {
     uint64_t fst;
     uint64_t snd;
 } uint64_tuple_t;

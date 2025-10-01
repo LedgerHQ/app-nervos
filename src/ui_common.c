@@ -96,31 +96,3 @@ void register_ui_callback(uint32_t which, string_generation_callback cb, const v
     global.ui.prompt.callbacks[which] = cb;
     global.ui.prompt.callback_data[which] = data;
 }
-
-void require_pin(void) {
-    bolos_ux_params_t params;
-    memset(&params, 0, sizeof(params));
-    params.ux_id = BOLOS_UX_VALIDATE_PIN;
-    os_ux_blocking(&params);
-}
-
-void exit_app(void) {
-#ifdef BAKING_APP
-#ifdef TARGET_NANOS
-    require_pin();
-#endif
-#endif
-    BEGIN_TRY_L(exit) {
-        TRY_L(exit) {
-#ifdef REVAMPED_IO
-            // handle properly the USB stop/start
-            os_io_stop();
-#endif /* #ifdef REVAMPED_IO */
-            os_sched_exit(-1);
-        }
-        FINALLY_L(exit) {}
-    }
-    END_TRY_L(exit);
-
-    THROW(0); // Suppress warning
-}

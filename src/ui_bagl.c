@@ -12,6 +12,7 @@
 #include "os_cx.h" // ui-menu
 #include "to_string.h"
 #include "ux.h"
+#include "main_std_app.h" // app_exit
 
 #include <stdbool.h>
 #include <string.h>
@@ -85,7 +86,7 @@ UX_STEP_NOCB(
     bn,
     {
       "Nervos",
-      VERSION
+      APPVERSION
     });
 UX_STEP_CB(
     ux_idle_flow_cfg_step,
@@ -98,7 +99,7 @@ UX_STEP_CB(
 UX_STEP_CB(
     ux_idle_flow_quit_step,
     pb,
-    exit_app(),
+    app_exit(),
     {
       &C_icon_dashboard_x,
       "Quit",

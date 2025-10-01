@@ -3,6 +3,7 @@
 #include "apdu.h"
 #include "keys.h"
 #include "globals.h"
+#include "format.h"
 
 #include <string.h>
 
@@ -193,23 +194,14 @@ void bin_to_hex(char *const out, size_t const out_size, uint8_t const *const in,
     check_null(out);
     check_null(in);
 
-    size_t const out_len = in_size * 2;
-    if (out_size < out_len + 1)
-        THROW(EXC_MEMORY_ERROR);
-
-    char const *const src = (char const *)PIC(in);
-    for (size_t i = 0; i < in_size; i++) {
-        out[i * 2] = "0123456789ABCDEF"[src[i] >> 4];
-        out[i * 2 + 1] = "0123456789ABCDEF"[src[i] & 0x0F];
-    }
-    out[out_len] = '\0';
+    format_hex(in, in_size, out, out_size);
 }
 
 void buffer_to_hex(char *const out, size_t const out_size, buffer_t const *const in) {
     check_null(out);
     check_null(in);
     buffer_t const *const src = (buffer_t const *)PIC(in);
-    bin_to_hex(out, out_size, src->bytes, src->length);
+    bin_to_hex(out, out_size, src->ptr, src->size);
 }
 
 void lock_arg_to_sighash_address(char *const dest, size_t const buff_size, lock_arg_t const *const lock_arg) {
