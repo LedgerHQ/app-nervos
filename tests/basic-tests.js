@@ -7,7 +7,7 @@ describe("Basic Tests", () => {
     it('can fetch the version of the app', async function () {
       const cfg = await this.ckb.getAppConfiguration();
       expect(cfg).to.be.a('object');
-      expect(cfg).to.have.property("version", "0.6.0");
+      expect(cfg).to.have.property("version", "0.6.2");
       if (process.env.COMMIT && process.env.COMMIT != "TEST*")
         expect(cfg).to.have.property("hash", process.env.COMMIT);
     });

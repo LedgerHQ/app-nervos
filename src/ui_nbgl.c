@@ -4,7 +4,7 @@
 #include "ui.h"
 #include "glyphs.h"
 #include "globals.h"
-
+#include "main_std_app.h"
 
 enum {
     TESTNET_ADDR_TOKEN = FIRST_USER_TOKEN,
@@ -18,7 +18,7 @@ static const char* const infoTypes[] = {
 };
 
 static const char* const infoContents[] = {
-    VERSION
+    APPVERSION
 };
 
 #define SETTINGS_NB_SWITCHES 3
@@ -92,13 +92,13 @@ void ui_initial_screen(void) {
     settingContents.nbContents = 1;
 
     nbgl_useCaseHomeAndSettings(APPNAME,
-                                &C_app_nervos_64px,
+                                &ICON_HOME,
                                 NULL,
                                 INIT_HOME_PAGE,
                                 &settingContents,
                                 &infosList,
                                 NULL,
-                                exit_app);
+                                app_exit);
 }
 
 static nbgl_layoutTagValue_t pair;
@@ -145,7 +145,7 @@ void ui_prompt_with_cb(void (*switch_screen_cb)(size_t),
 
     nbgl_useCaseReview(TYPE_TRANSACTION,
                         &pair_list,
-                        &C_app_nervos_64px,
+                        &ICON_HOME,
                         "Confirm "APPNAME" action",
                         NULL,
                         "Confirm "APPNAME" action",

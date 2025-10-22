@@ -1,3 +1,6 @@
+#include "io.h"
+#include "status_words.h"
+#include "parser.h"
 #include "apdu.h"
 #include "globals.h"
 #include "to_string.h"
@@ -104,123 +107,51 @@ void measure_stack_max() {
 #define CLA 0x80
 
 void main_loop(apdu_handler const *const handlers, size_t const handlers_size) {
-    unsigned short rx = 0;
-    unsigned short tx = 0;
-    unsigned char flags = 0;
+    // Length of APDU command received in G_io_apdu_buffer
+    int input_len = 0;
+    // Structured APDU command
+    command_t cmd;
 
-    while (true) {
-        BEGIN_TRY {
-            TRY {
-                app_stack_canary=0xdeadbeef;
-                // Process APDU of size rx
-
-                rx = tx;
-                tx = 0;
-                rx = io_exchange(CHANNEL_APDU | flags, rx);
-                flags = 0;
-                if (rx == 0) {
-                    // no apdu received, well, reset the session, and reset the
-                    // bootloader configuration
-                    THROW(EXC_SECURITY);
-                }
-
-                if (G_io_apdu_buffer[OFFSET_CLA] != CLA) {
-                    THROW(EXC_CLASS);
-                }
-
-                // The amount of bytes we get in our APDU must match what the APDU declares
-                // its own content length is. All these values are unsigned, so this implies
-                // that if rx < OFFSET_CDATA it also throws.
-                if (rx != G_io_apdu_buffer[OFFSET_LC] + OFFSET_CDATA) {
-                    THROW(EXC_WRONG_LENGTH);
-                }
-
-#ifdef STACK_MEASURE
-                stack_sentry_fill();
-#endif
-
-                uint8_t const instruction = G_io_apdu_buffer[OFFSET_INS];
-
-                apdu_handler const cb = instruction >= handlers_size ? handle_apdu_error : handlers[instruction];
-
-                PRINTF("SIZOF1: %d SIZEOF2: %d\n", sizeof(G_ux), sizeof(G_ux_params));
-                PRINTF("Calling handler\n");
-                cb(instruction);
-                PRINTF("Normal return\n");
-
-                if(0xdeadbeef != app_stack_canary) {
-                    THROW(EXC_STACK_ERROR);
-                }
-#ifdef STACK_MEASURE
-                measure_stack_max();
-#endif
-
-                flags |= IO_ASYNCH_REPLY;
-            }
-            CATCH(ASYNC_EXCEPTION) {
-#ifdef STACK_MEASURE
-                measure_stack_max();
-#endif
-            }
-            CATCH(EXCEPTION_IO_RESET) {
-                THROW(EXCEPTION_IO_RESET);
-            }
-            CATCH_OTHER(e) {
-                clear_apdu_globals(); // IMPORTANT: Application state must not persist through errors
-
-                uint16_t sw = e;
-                PRINTF("Error caught at top level, number: %x\n", sw);
-                switch (sw) {
-                default:
-                    sw = 0x6800 | (e & 0x7FF);
-                    __attribute__((fallthrough));
-                case 0x6000 ... 0x6FFF:
-                case 0x9000 ... 0x9FFF: {
-                    PRINTF("Line number: %d", sw & 0x0FFF);
-                    tx = 0;
-                    G_io_apdu_buffer[tx++] = sw >> 8;
-                    G_io_apdu_buffer[tx++] = sw;
-                    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
-                    break;
-                }
-                case 0xA000 ... 0xAFFF: {
-                    PRINTF("Other error: %x\n", sw);
-                    tx = 0;
-                    G_io_apdu_buffer[tx++] = sw >> 8;
-                    G_io_apdu_buffer[tx++] = sw;
-                    io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
-                    break;
-					}
-                }
-            }
-            FINALLY {}
-        }
-        END_TRY;
-    }
-}
-
-// I have no idea what this function does, but it is called by the OS
-unsigned short io_exchange_al(unsigned char channel, unsigned short tx_len) {
-    switch (channel & ~(IO_FLAGS)) {
-    case CHANNEL_KEYBOARD:
-        break;
-
-    // multiplexed io exchange over a SPI channel and TLV encapsulated protocol
-    case CHANNEL_SPI:
-        if (tx_len) {
-            io_seproxyhal_spi_send(G_io_apdu_buffer, tx_len);
-
-            if (channel & IO_RESET_AFTER_REPLIED) {
-                reset();
-            }
-            return 0; // nothing received from the master so far (it's a tx
-                      // transaction)
-        } else {
-            return io_seproxyhal_spi_recv(G_io_apdu_buffer, sizeof(G_io_apdu_buffer), 0);
+    io_init();
+    for (;;) {
+        // Receive command bytes in G_io_apdu_buffer
+        if ((input_len = io_recv_command()) < 0) {
+            PRINTF("=> io_recv_command failure\n");
+            return;
         }
 
-    default:
-        THROW(INVALID_PARAMETER);
+        // Parse APDU command from G_io_apdu_buffer
+        if (!apdu_parser(&cmd, G_io_apdu_buffer, input_len)) {
+            PRINTF("=> /!\\ BAD LENGTH: %.*H\n", input_len, G_io_apdu_buffer);
+            io_send_sw(SWO_WRONG_DATA_LENGTH);
+            continue;
+        }
+
+        PRINTF("=> CLA=%02X | INS=%02X | P1=%02X | P2=%02X | Lc=%02X | CData=%.*H\n",
+               cmd.cla,
+               cmd.ins,
+               cmd.p1,
+               cmd.p2,
+               cmd.lc,
+               cmd.lc,
+               cmd.data);
+
+        if (cmd.cla != CLA) {
+            io_send_sw(SWO_INVALID_CLA);
+            continue;
+        }
+
+        if (cmd.ins >= handlers_size) {
+            io_send_sw(SWO_INVALID_INS);
+            continue;
+        }
+
+        // Dispatch structured APDU command to handler
+        apdu_handler const cb = handlers[cmd.ins];
+
+        PRINTF("SIZOF1: %d SIZEOF2: %d\n", sizeof(G_ux), sizeof(G_ux_params));
+        PRINTF("Calling handler\n");
+        cb(cmd.ins);
+        PRINTF("Normal return\n");
     }
-    return 0;
 }

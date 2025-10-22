@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "bolos_target.h"
+#include "buffer.h"
 
 // Zeros out all globals that can keep track of APDU instruction state.
 // Notably this does *not* include UI state.
@@ -195,8 +196,6 @@ extern const uint8_t blake2b_personalization[17];
 
 extern unsigned int volatile app_stack_canary; // From SDK
 
-extern unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
-
 static inline void throw_stack_size() {
     uint8_t st;
     // uint32_t tmp1 = (uint32_t)&st - (uint32_t)&app_stack_canary;
@@ -207,13 +206,8 @@ static inline void throw_stack_size() {
 void calculate_baking_idle_screens_data(void);
 void update_baking_idle_screens(void);
 
-#if defined(TARGET_NANOS)
-    extern nvram_data N_data_real;
-#   define N_data (*(nvram_data*)PIC(&N_data_real))
-#else
-    extern nvram_data const N_data_real;
-#   define N_data (*(volatile nvram_data *)PIC(&N_data_real))
-#endif
+extern nvram_data const N_data_real;
+#define N_data (*(volatile nvram_data *)PIC(&N_data_real))
 
 
 // Properly updates NVRAM data to prevent any clobbering of data.

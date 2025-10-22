@@ -47,7 +47,6 @@ exports.mochaHooks = {
       } else {
         this.speculosProcess = spawn('speculos', [
           process.env.LEDGER_APP,
-          '--sdk', '2.0', // TODO keep in sync
           '--display', 'headless',
           '--button-port', '' + BUTTON_PORT,
           '--automation-port', '' + AUTOMATION_PORT,
@@ -123,11 +122,10 @@ async function flowAccept(speculos, expectedPrompts, acceptPrompt="Accept") {
 // A couple of our screens use "bn" formatting for only one line of text and we
 // don't have an icon so don't want "pn"; we need to know that there isn't
 // going to be a body in those cases so we should send the screen.
-
-const headerOnlyScreens = {
-  "Configuration": 1,
-  "Main menu": 1
-};
+const headerOnlyScreens = [
+  "Configuration",
+  "Main menu",
+];
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -173,7 +171,7 @@ async function automationStart(speculos, interactionFunc) {
     next: evt => {
       if(!evt.text) return;
       // Wrap up two-line prompts into one:
-      if(evt.y == 3 && ! headerOnlyScreens[evt.text]) {
+      if ((header == undefined) && (evt.y <= 25) && (headerOnlyScreens.indexOf(evt.text) == -1)) {
         header = evt.text;
         return; // The top line comes out first, so now wait for the next draw.
       } else {
